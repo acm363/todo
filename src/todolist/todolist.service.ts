@@ -1,4 +1,9 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import {
+  HttpException,
+  HttpStatus,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { Todo } from './entities/todo.entity';
@@ -24,12 +29,29 @@ export class TodolistService {
   }
 
   // s'inspirer du preload by name flavors pour les tasks
-  create(createTodoDto: CreateTodoDto) {
-    const todo = new this.todoModel({
-      ...createTodoDto,
-      createdAt: new Date(),
-    });
-    return todo.save();
+  async create(createTodoDto: CreateTodoDto) {
+    const existingTodoWithSameId = await this.todoModel
+      .find({ todoId: createTodoDto.todoId })
+      .exec();
+    if (typeof existingTodoWithSameId !== 'object') {
+      console.log(`\t création ok!`);
+      const todo = new this.todoModel({
+        ...createTodoDto,
+        createdAt: new Date().toISOString(),
+      });
+      return todo.save();
+    } else {
+      console.log(`\t création non aboutie!`);
+      console.log(`\n todo : ${typeof existingTodoWithSameId}`);
+      console.log(`\n Exception levée : la todoId entrée existe déjà `);
+      throw new HttpException(
+        {
+          status: HttpStatus.CONFLICT,
+          message: 'Already used todoId',
+        },
+        HttpStatus.CONFLICT,
+      );
+    }
   }
 
   async update(id: number, updateTodoDto: UpdateTodoDto) {

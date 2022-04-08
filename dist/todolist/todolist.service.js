@@ -31,9 +31,24 @@ let TodolistService = class TodolistService {
         }
         return todo;
     }
-    create(createTodoDto) {
-        const todo = new this.todoModel(Object.assign(Object.assign({}, createTodoDto), { createdAt: new Date() }));
-        return todo.save();
+    async create(createTodoDto) {
+        const existingTodoWithSameId = await this.todoModel
+            .find({ todoId: createTodoDto.todoId })
+            .exec();
+        if (typeof existingTodoWithSameId !== 'object') {
+            console.log(`\t création ok!`);
+            const todo = new this.todoModel(Object.assign(Object.assign({}, createTodoDto), { createdAt: new Date().toISOString() }));
+            return todo.save();
+        }
+        else {
+            console.log(`\t création non aboutie!`);
+            console.log(`\n todo : ${typeof existingTodoWithSameId}`);
+            console.log(`\n Exception levée : la todoId entrée existe déjà `);
+            throw new common_1.HttpException({
+                status: common_1.HttpStatus.CONFLICT,
+                message: 'Already used todoId',
+            }, common_1.HttpStatus.CONFLICT);
+        }
     }
     async update(id, updateTodoDto) {
         const existingTodo = await this.todoModel

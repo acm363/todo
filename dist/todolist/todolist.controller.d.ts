@@ -8,6 +8,7 @@
 /// <reference types="mongoose" />
 import { TodolistService } from './todolist.service';
 import { CreateTodoDto } from './dto/create-todo.dto';
+import { UpdateTodoDto } from './dto/update-todo.dto';
 export declare class TodolistController {
     private readonly todolistService;
     constructor(todolistService: TodolistService);
@@ -20,6 +21,7 @@ export declare class TodolistController {
     create(createTodoDto: CreateTodoDto): Promise<import("./entities/todo.entity").Todo & {
         _id: any;
     }>;
+    update(todoId: number, updateTodoDto: UpdateTodoDto): void;
     remove(todoId: number): Promise<import("./entities/todo.entity").Todo & {
         _id: any;
     }>;

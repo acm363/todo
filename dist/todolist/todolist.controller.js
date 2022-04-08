@@ -16,15 +16,18 @@ exports.TodolistController = void 0;
 const common_1 = require("@nestjs/common");
 const todolist_service_1 = require("./todolist.service");
 const create_todo_dto_1 = require("./dto/create-todo.dto");
+const http_exception_filter_1 = require("../common/filters/http-exception.filter");
+const update_todo_dto_1 = require("./dto/update-todo.dto");
 let TodolistController = class TodolistController {
     constructor(todolistService) {
         this.todolistService = todolistService;
     }
     findAll() {
+        console.log(`\n Récupération de toutes les TODO`);
         return this.todolistService.findAll();
     }
     findOne(todoId) {
-        console.log("récupération de la todo d'id : " +
+        console.log("\n Récupération de la todo d'id : " +
             todoId +
             ' type(' +
             typeof todoId +
@@ -32,13 +35,18 @@ let TodolistController = class TodolistController {
         return this.todolistService.findOne(todoId);
     }
     create(createTodoDto) {
-        console.log(`création d'une todo -- ${createTodoDto instanceof create_todo_dto_1.CreateTodoDto}`);
+        console.log(`\n Création d'une todo -- `);
         return this.todolistService.create(createTodoDto);
     }
+    update(todoId, updateTodoDto) {
+        console.log(`\n Modification de la TODO de todoId : ${todoId} `);
+    }
     remove(todoId) {
+        console.log(`\n Suppression de la TODO de todoId : ${todoId} `);
         return this.todolistService.remove(todoId);
     }
     removeAll() {
+        console.log(`\n Suppression de toutes les TODO`);
         return this.todolistService.removeAll();
     }
 };
@@ -57,11 +65,19 @@ __decorate([
 ], TodolistController.prototype, "findOne", null);
 __decorate([
     (0, common_1.Post)(),
+    (0, common_1.UseFilters)(http_exception_filter_1.HttpExceptionFilter),
     __param(0, (0, common_1.Body)()),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [create_todo_dto_1.CreateTodoDto]),
     __metadata("design:returntype", void 0)
 ], TodolistController.prototype, "create", null);
+__decorate([
+    (0, common_1.Patch)(':todoId'),
+    __param(0, (0, common_1.Param)('todoId')),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Number, update_todo_dto_1.UpdateTodoDto]),
+    __metadata("design:returntype", void 0)
+], TodolistController.prototype, "update", null);
 __decorate([
     (0, common_1.Delete)(':todoId'),
     __param(0, (0, common_1.Param)('todoId')),
