@@ -12,6 +12,8 @@ const app_controller_1 = require("./app.controller");
 const app_service_1 = require("./app.service");
 const mongoose_1 = require("@nestjs/mongoose");
 const todolist_module_1 = require("./todolist/todolist.module");
+const config_1 = require("@nestjs/config");
+const common_module_1 = require("./common/common.module");
 let AppModule = class AppModule {
 };
 AppModule = __decorate([
@@ -19,6 +21,8 @@ AppModule = __decorate([
         imports: [
             todolist_module_1.TodolistModule,
             mongoose_1.MongooseModule.forRoot('mongodb://localhost:27018/todo-list'),
+            config_1.ConfigModule.forRoot(),
+            common_module_1.CommonModule,
         ],
         controllers: [app_controller_1.AppController],
         providers: [app_service_1.AppService],

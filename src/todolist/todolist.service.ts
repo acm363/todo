@@ -23,7 +23,6 @@ export class TodolistService {
     return todo;
   }
 
-
   // s'inspirer du preload by name flavors pour les tasks
   create(createTodoDto: CreateTodoDto) {
     const todo = new this.todoModel({
