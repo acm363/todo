@@ -1,4 +1,5 @@
 import {
+  BadRequestException,
   HttpException,
   HttpStatus,
   Injectable,
@@ -9,8 +10,9 @@ import { Model } from 'mongoose';
 import { Todo } from './entities/todo.entity';
 import { CreateTodoDto } from './dto/create-todo.dto';
 import { UpdateTodoDto } from './dto/update-todo.dto';
-import { Task, TaskStatus } from './entities/task.entity';
-import { CreateTaskDto } from './dto/create-task.dto';
+import { Task, TaskStatus } from '../tasklist/entities/task.entity';
+import { ID_LEN } from './todolist.constant';
+import { UpdateStateTaskDto } from '../tasklist/dto/update-state-task.dto';
 
 @Injectable()
 export class TodolistService {
@@ -24,10 +26,17 @@ export class TodolistService {
   }
 
   async findOne(id: string) {
-    const todo = await this.todoModel.find({ id_: id }).populate('task').exec();
+    if (id.length !== ID_LEN) {
+      throw new BadRequestException(
+        'Given id is incorrect (non required id size)',
+      );
+    }
+    const todo = await this.todoModel.findById(id).populate('task').exec();
+
     if (!todo) {
       throw new NotFoundException(`Todo #${id} not found in the database!`);
     }
+
     return todo;
   }
 
@@ -47,7 +56,7 @@ export class TodolistService {
     const todo = new this.todoModel({
       title: createTodoDto.title,
       task: task._id,
-      createdAt: new Date().toISOString(),
+      createdAt: new Date().toLocaleString(),
     });
     if (todo) {
       console.log(`\t création ok!`);
@@ -58,7 +67,7 @@ export class TodolistService {
   async update(id: string, updateTodoDto: UpdateTodoDto) {
     console.log(`existing : ${updateTodoDto}`);
     const existingTodo = await this.todoModel
-      .findByIdAndUpdate({ _id: id }, { $set: updateTodoDto }, { new: true })
+      .findByIdAndUpdate(id, { $set: updateTodoDto }, { new: true })
       .exec();
     if (!existingTodo) {
       throw new NotFoundException(`Todo #${id} not found in the database`);
@@ -66,8 +75,31 @@ export class TodolistService {
     return existingTodo;
   }
 
+  async updateTaskToCompleted(updateStateTaskDto: UpdateStateTaskDto) {
+    console.log(` try to complete task : ${updateStateTaskDto.taskId}`);
+    const existingTodo = await this.todoModel.findById(
+      updateStateTaskDto.todoId,
+    );
+    if (!existingTodo) {
+      console.log(' Cannot complete the task!');
+      throw new NotFoundException(
+        `Todo #${updateStateTaskDto.todoId} with taskId #${updateStateTaskDto.taskId} not found in the database`,
+      );
+    }
+    const existingTask = await this.taskModel.findByIdAndUpdate(
+      updateStateTaskDto.taskId,
+      {
+        $set: {
+          status: TaskStatus.Completed,
+        },
+      },
+    );
+    console.log(' task completed');
+    return existingTodo;
+  }
+
   async remove(id: string) {
-    const todo = await this.todoModel.findOneAndDelete({ id_: id }).exec();
+    const todo = await this.todoModel.findByIdAndDelete(id).exec();
     if (!todo) {
       throw new NotFoundException(`Todo #${id} not found in the database`);
     }

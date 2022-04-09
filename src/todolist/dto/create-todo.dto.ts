@@ -1,6 +1,6 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { IsNumber, IsString } from 'class-validator';
-import { TaskStatus } from '../entities/task.entity';
+import { TaskStatus } from '../../tasklist/entities/task.entity';
 
 export class CreateTodoDto {
   @ApiProperty({
