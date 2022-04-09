@@ -16,15 +16,6 @@ class CreateTodoDto {
 }
 __decorate([
     (0, swagger_1.ApiProperty)({
-        description: 'the id of the todo resource in the application(not real in database)',
-        required: true,
-        minimum: 1,
-    }),
-    (0, class_validator_1.IsNumber)(),
-    __metadata("design:type", Number)
-], CreateTodoDto.prototype, "todoId", void 0);
-__decorate([
-    (0, swagger_1.ApiProperty)({
         description: 'The title of the todo resource',
         required: true,
         minLength: 1,
@@ -34,8 +25,7 @@ __decorate([
 ], CreateTodoDto.prototype, "title", void 0);
 __decorate([
     (0, swagger_1.ApiProperty)({ description: 'The task of the todo resource', required: true }),
-    (0, class_validator_1.IsString)({ each: true }),
-    __metadata("design:type", Array)
-], CreateTodoDto.prototype, "tasks", void 0);
+    __metadata("design:type", String)
+], CreateTodoDto.prototype, "task", void 0);
 exports.CreateTodoDto = CreateTodoDto;
 //# sourceMappingURL=create-todo.dto.js.map

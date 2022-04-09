@@ -7,4 +7,4 @@ services:
     ports:
       - 27018:27017
     environment:
-      MONGODB_DATABASE: todo-list
+      MONGODB_DATABASE: todo

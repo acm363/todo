@@ -5,6 +5,7 @@ import { MongooseModule } from '@nestjs/mongoose';
 import { TodolistModule } from './todolist/todolist.module';
 import { ConfigModule } from '@nestjs/config';
 import { CommonModule } from './common/common.module';
+import { TaskListService } from './tasklist/tasklist.service';
 
 @Module({
   imports: [
@@ -14,6 +15,6 @@ import { CommonModule } from './common/common.module';
     CommonModule,
   ],
   controllers: [AppController],
-  providers: [AppService],
+  providers: [AppService, TaskListService],
 })
 export class AppModule {}

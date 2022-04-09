@@ -17,42 +17,48 @@ const common_1 = require("@nestjs/common");
 const mongoose_1 = require("@nestjs/mongoose");
 const mongoose_2 = require("mongoose");
 const todo_entity_1 = require("./entities/todo.entity");
+const task_entity_1 = require("./entities/task.entity");
 let TodolistService = class TodolistService {
-    constructor(todoModel) {
+    constructor(todoModel, taskModel) {
         this.todoModel = todoModel;
+        this.taskModel = taskModel;
     }
     findAll() {
-        return this.todoModel.find().exec();
+        return this.todoModel.find().populate('task').exec();
     }
     async findOne(id) {
-        const todo = await this.todoModel.find({ todoId: id }).exec();
+        const todo = await this.todoModel.find({ id_: id }).populate('task').exec();
         if (!todo) {
             throw new common_1.NotFoundException(`Todo #${id} not found in the database!`);
         }
         return todo;
     }
+    async createTask(task_title) {
+        console.log('création des tâches');
+        const task = new this.taskModel({
+            title: task_title,
+            status: task_entity_1.TaskStatus.TODO,
+        });
+        return task.save();
+    }
     async create(createTodoDto) {
-        const existingTodoWithSameId = await this.todoModel
-            .find({ todoId: createTodoDto.todoId })
-            .exec();
-        if (typeof existingTodoWithSameId !== 'object') {
+        console.log('tentative de création');
+        const task = await this.createTask(createTodoDto.task);
+        console.log(`task : ${task}`);
+        const todo = new this.todoModel({
+            title: createTodoDto.title,
+            task: task._id,
+            createdAt: new Date().toISOString(),
+        });
+        if (todo) {
             console.log(`\t création ok!`);
-            const todo = new this.todoModel(Object.assign(Object.assign({}, createTodoDto), { createdAt: new Date().toISOString() }));
-            return todo.save();
         }
-        else {
-            console.log(`\t création non aboutie!`);
-            console.log(`\n todo : ${typeof existingTodoWithSameId}`);
-            console.log(`\n Exception levée : la todoId entrée existe déjà `);
-            throw new common_1.HttpException({
-                status: common_1.HttpStatus.CONFLICT,
-                message: 'Already used todoId',
-            }, common_1.HttpStatus.CONFLICT);
-        }
+        return todo.save();
     }
     async update(id, updateTodoDto) {
+        console.log(`existing : ${updateTodoDto}`);
         const existingTodo = await this.todoModel
-            .findOneAndUpdate({ todoId: id }, { $set: updateTodoDto }, { new: true })
+            .findByIdAndUpdate({ _id: id }, { $set: updateTodoDto }, { new: true })
             .exec();
         if (!existingTodo) {
             throw new common_1.NotFoundException(`Todo #${id} not found in the database`);
@@ -60,7 +66,7 @@ let TodolistService = class TodolistService {
         return existingTodo;
     }
     async remove(id) {
-        const todo = await this.todoModel.findOneAndDelete({ todoId: id }).exec();
+        const todo = await this.todoModel.findOneAndDelete({ id_: id }).exec();
         if (!todo) {
             throw new common_1.NotFoundException(`Todo #${id} not found in the database`);
         }
@@ -73,7 +79,9 @@ let TodolistService = class TodolistService {
 TodolistService = __decorate([
     (0, common_1.Injectable)(),
     __param(0, (0, mongoose_1.InjectModel)(todo_entity_1.Todo.name)),
-    __metadata("design:paramtypes", [mongoose_2.Model])
+    __param(1, (0, mongoose_1.InjectModel)(task_entity_1.Task.name)),
+    __metadata("design:paramtypes", [mongoose_2.Model,
+        mongoose_2.Model])
 ], TodolistService);
 exports.TodolistService = TodolistService;
 //# sourceMappingURL=todolist.service.js.map

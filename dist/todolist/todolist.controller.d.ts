@@ -12,17 +12,19 @@ import { UpdateTodoDto } from './dto/update-todo.dto';
 export declare class TodolistController {
     private readonly todolistService;
     constructor(todolistService: TodolistService);
-    findAll(): Promise<(import("./entities/todo.entity").Todo & {
+    findAll(): Promise<Omit<import("./entities/todo.entity").Todo & {
         _id: any;
-    })[]>;
-    findOne(todoId: number): Promise<(import("./entities/todo.entity").Todo & {
+    }, never>[]>;
+    findOne(id: string): Promise<Omit<import("./entities/todo.entity").Todo & {
         _id: any;
-    })[]>;
+    }, never>[]>;
     create(createTodoDto: CreateTodoDto): Promise<import("./entities/todo.entity").Todo & {
         _id: any;
     }>;
-    update(todoId: number, updateTodoDto: UpdateTodoDto): void;
-    remove(todoId: number): Promise<import("./entities/todo.entity").Todo & {
+    update(id: string, updateTodoDto: UpdateTodoDto): Promise<import("./entities/todo.entity").Todo & {
+        _id: any;
+    }>;
+    remove(id: string): Promise<import("./entities/todo.entity").Todo & {
         _id: any;
     }>;
     removeAll(): import("mongoose").Query<import("mongodb").DeleteResult, import("./entities/todo.entity").Todo & {

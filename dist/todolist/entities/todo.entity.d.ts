@@ -1,15 +1,8 @@
-/// <reference types="mongoose/types/pipelinestage" />
-/// <reference types="mongoose/types/connection" />
-/// <reference types="mongoose/types/cursor" />
-/// <reference types="mongoose/types/document" />
-/// <reference types="mongoose/types/error" />
-/// <reference types="mongoose/types/mongooseoptions" />
-/// <reference types="mongoose/types/schemaoptions" />
 import { Document } from 'mongoose';
+import * as mongoose from 'mongoose';
 export declare class Todo extends Document {
-    todoId: number;
     title: string;
-    tasks: string[];
+    task: mongoose.Schema.Types.ObjectId;
     createdAt: Date;
 }
-export declare const TodoSchema: import("mongoose").Schema<Todo, import("mongoose").Model<Todo, any, any, any>, {}, {}>;
+export declare const TodoSchema: mongoose.Schema<Todo, mongoose.Model<Todo, any, any, any>, {}, {}>;

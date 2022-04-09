@@ -12,22 +12,19 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.TodoSchema = exports.Todo = void 0;
 const mongoose_1 = require("@nestjs/mongoose");
 const mongoose_2 = require("mongoose");
+const mongoose = require("mongoose");
 let Todo = class Todo extends mongoose_2.Document {
 };
-__decorate([
-    (0, mongoose_1.Prop)({ unique: true }),
-    __metadata("design:type", Number)
-], Todo.prototype, "todoId", void 0);
 __decorate([
     (0, mongoose_1.Prop)(),
     __metadata("design:type", String)
 ], Todo.prototype, "title", void 0);
 __decorate([
-    (0, mongoose_1.Prop)([String]),
-    __metadata("design:type", Array)
-], Todo.prototype, "tasks", void 0);
+    (0, mongoose_1.Prop)({ type: mongoose.Schema.Types.ObjectId, ref: 'Task' }),
+    __metadata("design:type", mongoose.Schema.Types.ObjectId)
+], Todo.prototype, "task", void 0);
 __decorate([
-    (0, mongoose_1.Prop)(),
+    (0, mongoose_1.Prop)({ type: Date }),
     __metadata("design:type", Date)
 ], Todo.prototype, "createdAt", void 0);
 Todo = __decorate([

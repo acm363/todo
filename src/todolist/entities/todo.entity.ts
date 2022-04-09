@@ -1,19 +1,17 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
-import { timestamp } from 'rxjs';
-import { Document } from 'mongoose';
+import { Document, Types } from 'mongoose';
+import { Task } from './task.entity';
+import * as mongoose from 'mongoose';
+
 @Schema()
 export class Todo extends Document {
-  @Prop({ unique: true })
-  todoId: number;
-
   @Prop()
   title: string;
 
-  @Prop([String])
-  tasks: string[];
+  @Prop({ type: mongoose.Schema.Types.ObjectId, ref: 'Task' })
+  task: mongoose.Schema.Types.ObjectId;
 
-  @Prop()
+  @Prop({ type: Date })
   createdAt: Date;
 }
-
 export const TodoSchema = SchemaFactory.createForClass(Todo);

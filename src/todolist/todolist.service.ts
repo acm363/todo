@@ -9,54 +9,56 @@ import { Model } from 'mongoose';
 import { Todo } from './entities/todo.entity';
 import { CreateTodoDto } from './dto/create-todo.dto';
 import { UpdateTodoDto } from './dto/update-todo.dto';
+import { Task, TaskStatus } from './entities/task.entity';
+import { CreateTaskDto } from './dto/create-task.dto';
 
 @Injectable()
 export class TodolistService {
   constructor(
     @InjectModel(Todo.name) private readonly todoModel: Model<Todo>,
+    @InjectModel(Task.name) private readonly taskModel: Model<Task>,
   ) {}
 
   findAll() {
-    return this.todoModel.find().exec();
+    return this.todoModel.find().populate('task').exec();
   }
 
-  async findOne(id: number) {
-    const todo = await this.todoModel.find({ todoId: id }).exec();
+  async findOne(id: string) {
+    const todo = await this.todoModel.find({ id_: id }).populate('task').exec();
     if (!todo) {
       throw new NotFoundException(`Todo #${id} not found in the database!`);
     }
     return todo;
   }
 
-  // s'inspirer du preload by name flavors pour les tasks
-  async create(createTodoDto: CreateTodoDto) {
-    const existingTodoWithSameId = await this.todoModel
-      .find({ todoId: createTodoDto.todoId })
-      .exec();
-    if (typeof existingTodoWithSameId !== 'object') {
-      console.log(`\t création ok!`);
-      const todo = new this.todoModel({
-        ...createTodoDto,
-        createdAt: new Date().toISOString(),
-      });
-      return todo.save();
-    } else {
-      console.log(`\t création non aboutie!`);
-      console.log(`\n todo : ${typeof existingTodoWithSameId}`);
-      console.log(`\n Exception levée : la todoId entrée existe déjà `);
-      throw new HttpException(
-        {
-          status: HttpStatus.CONFLICT,
-          message: 'Already used todoId',
-        },
-        HttpStatus.CONFLICT,
-      );
-    }
+  async createTask(task_title: string) {
+    console.log('création des tâches');
+    const task = new this.taskModel({
+      title: task_title,
+      status: TaskStatus.TODO,
+    });
+    return task.save();
   }
 
-  async update(id: number, updateTodoDto: UpdateTodoDto) {
+  async create(createTodoDto: CreateTodoDto) {
+    console.log('tentative de création');
+    const task = await this.createTask(createTodoDto.task);
+    console.log(`task : ${task}`);
+    const todo = new this.todoModel({
+      title: createTodoDto.title,
+      task: task._id,
+      createdAt: new Date().toISOString(),
+    });
+    if (todo) {
+      console.log(`\t création ok!`);
+    }
+    return todo.save();
+  }
+
+  async update(id: string, updateTodoDto: UpdateTodoDto) {
+    console.log(`existing : ${updateTodoDto}`);
     const existingTodo = await this.todoModel
-      .findOneAndUpdate({ todoId: id }, { $set: updateTodoDto }, { new: true })
+      .findByIdAndUpdate({ _id: id }, { $set: updateTodoDto }, { new: true })
       .exec();
     if (!existingTodo) {
       throw new NotFoundException(`Todo #${id} not found in the database`);
@@ -64,8 +66,8 @@ export class TodolistService {
     return existingTodo;
   }
 
-  async remove(id: number) {
-    const todo = await this.todoModel.findOneAndDelete({ todoId: id }).exec();
+  async remove(id: string) {
+    const todo = await this.todoModel.findOneAndDelete({ id_: id }).exec();
     if (!todo) {
       throw new NotFoundException(`Todo #${id} not found in the database`);
     }
@@ -75,9 +77,4 @@ export class TodolistService {
   removeAll() {
     return this.todoModel.deleteMany();
   }
-
-  // ici on va modifier l'état de la tache d'id taskId
-  // en front end, l'utilisateur ne verra par exemple que des boutons permettant de
-  // changer les états, en back-end nous transférerons les messages correspondants aux boutons
-  // async setTaskState(id: string, taskId: string, taskState: string) {}
 }

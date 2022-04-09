@@ -14,6 +14,7 @@ const mongoose_1 = require("@nestjs/mongoose");
 const todolist_module_1 = require("./todolist/todolist.module");
 const config_1 = require("@nestjs/config");
 const common_module_1 = require("./common/common.module");
+const tasklist_service_1 = require("./tasklist/tasklist.service");
 let AppModule = class AppModule {
 };
 AppModule = __decorate([
@@ -25,7 +26,7 @@ AppModule = __decorate([
             common_module_1.CommonModule,
         ],
         controllers: [app_controller_1.AppController],
-        providers: [app_service_1.AppService],
+        providers: [app_service_1.AppService, tasklist_service_1.TaskListService],
     })
 ], AppModule);
 exports.AppModule = AppModule;

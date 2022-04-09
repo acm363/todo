@@ -9,23 +9,20 @@ var __metadata = (this && this.__metadata) || function (k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.TaskStatus = exports.TaskSchema = exports.Task = void 0;
+exports.TaskSchema = exports.Task = exports.TaskStatus = void 0;
 const mongoose_1 = require("@nestjs/mongoose");
 const mongoose_2 = require("mongoose");
+var TaskStatus;
+(function (TaskStatus) {
+    TaskStatus["TODO"] = "Todo";
+    TaskStatus["Completed"] = "Completed";
+})(TaskStatus = exports.TaskStatus || (exports.TaskStatus = {}));
 let Task = class Task extends mongoose_2.Document {
 };
 __decorate([
     (0, mongoose_1.Prop)(),
-    __metadata("design:type", Number)
-], Task.prototype, "taskId", void 0);
-__decorate([
-    (0, mongoose_1.Prop)(),
     __metadata("design:type", String)
 ], Task.prototype, "title", void 0);
-__decorate([
-    (0, mongoose_1.Prop)(),
-    __metadata("design:type", String)
-], Task.prototype, "description", void 0);
 __decorate([
     (0, mongoose_1.Prop)(),
     __metadata("design:type", String)
@@ -35,10 +32,4 @@ Task = __decorate([
 ], Task);
 exports.Task = Task;
 exports.TaskSchema = mongoose_1.SchemaFactory.createForClass(Task);
-var TaskStatus;
-(function (TaskStatus) {
-    TaskStatus["Active"] = "Active";
-    TaskStatus["NotStarted"] = "Not Started";
-    TaskStatus["Completed"] = "Completed";
-})(TaskStatus = exports.TaskStatus || (exports.TaskStatus = {}));
 //# sourceMappingURL=task.entity.js.map
