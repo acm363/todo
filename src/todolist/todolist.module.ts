@@ -3,7 +3,8 @@ import { MongooseModule } from '@nestjs/mongoose';
 import { Todo, TodoSchema } from './entities/todo.entity';
 import { TodolistController } from './todolist.controller';
 import { TodolistService } from './todolist.service';
-import { Task, TaskSchema } from '../tasklist/entities/task.entity';
+import { Task, TaskSchema } from '../task/entities/task.entity';
+import { TaskService } from '../task/task.service';
 
 @Module({
   imports: [
@@ -19,6 +20,6 @@ import { Task, TaskSchema } from '../tasklist/entities/task.entity';
     ]),
   ],
   controllers: [TodolistController],
-  providers: [TodolistService],
+  providers: [TodolistService, TaskService],
 })
 export class TodolistModule {}

@@ -3,7 +3,7 @@ import { Document } from 'mongoose';
 
 export enum TaskStatus {
   TODO = 'Todo',
-  Completed = 'Completed',
+  DONE = 'Done',
 }
 
 @Schema()

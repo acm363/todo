@@ -1,6 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsNumber, IsString } from 'class-validator';
-import { TaskStatus } from '../../tasklist/entities/task.entity';
+import { IsString } from 'class-validator';
 
 export class CreateTodoDto {
   @ApiProperty({
@@ -12,6 +11,7 @@ export class CreateTodoDto {
   readonly title: string;
 
   @ApiProperty({ description: 'The task of the todo resource', required: true })
-  readonly task: string;
+  @IsString({ each: true })
+  readonly tasks: [string];
   // la date est créée automatiquement
 }

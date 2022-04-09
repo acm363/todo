@@ -1,6 +1,6 @@
 import { IsString } from 'class-validator';
 
-export class UpdateStateTaskDto {
+export class UpdateTodoIdTaskId {
   @IsString()
   readonly todoId: string;
 

@@ -5,7 +5,7 @@ import { MongooseModule } from '@nestjs/mongoose';
 import { TodolistModule } from './todolist/todolist.module';
 import { ConfigModule } from '@nestjs/config';
 import { CommonModule } from './common/common.module';
-import { TaskListService } from './tasklist/tasklist.service';
+import { TaskModule } from './task/task.module';
 
 @Module({
   imports: [
@@ -13,8 +13,9 @@ import { TaskListService } from './tasklist/tasklist.service';
     MongooseModule.forRoot('mongodb://localhost:27018/todo-list'),
     ConfigModule.forRoot(),
     CommonModule,
+    TaskModule,
   ],
   controllers: [AppController],
-  providers: [AppService, TaskListService],
+  providers: [AppService],
 })
 export class AppModule {}

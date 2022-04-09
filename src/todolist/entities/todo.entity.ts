@@ -1,6 +1,5 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
-import { Document, Types } from 'mongoose';
-import { Task } from '../../tasklist/entities/task.entity';
+import { Document } from 'mongoose';
 import * as mongoose from 'mongoose';
 import { IsString } from 'class-validator';
 
@@ -9,8 +8,8 @@ export class Todo extends Document {
   @Prop()
   title: string;
 
-  @Prop({ type: mongoose.Schema.Types.ObjectId, ref: 'Task' })
-  task: mongoose.Schema.Types.ObjectId;
+  @Prop({ type: [mongoose.Schema.Types.ObjectId], ref: 'Task' })
+  tasks: [mongoose.Schema.Types.ObjectId];
 
   @Prop()
   @IsString()
