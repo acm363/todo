@@ -8,8 +8,8 @@ export class Todo extends Document {
   @Prop()
   title: string;
 
-  @Prop({ type: [mongoose.Schema.Types.ObjectId], ref: 'Task' })
-  tasks: [mongoose.Schema.Types.ObjectId];
+  @Prop({ type: [mongoose.Types.ObjectId], ref: 'Task' })
+  tasks: [mongoose.Types.ObjectId];
 
   @Prop()
   @IsString()

@@ -11,7 +11,7 @@ import {
 import { TodolistService } from './todolist.service';
 import { CreateTodoDto } from './dto/create-todo.dto';
 import { UpdateTodoDto } from './dto/update-todo.dto';
-import { UpdateTodoIdTaskId } from '../task/dto/todoId-taskId.dto';
+import { UpdateTodoIdTaskIdDto } from '../task/dto/todoId-taskId.dto';
 
 @Controller('todolist')
 export class TodolistController {
@@ -52,11 +52,11 @@ export class TodolistController {
 
   @Patch()
   @Header('Returned-At', new Date().toLocaleString())
-  updateTaskStateToDone(@Body() updateTodoIdTaskId: UpdateTodoIdTaskId) {
+  updateTaskStateToDone(@Body() updateTodoIdTaskIdDto: UpdateTodoIdTaskIdDto) {
     console.log(
-      `\n Modification de l'état de tâche d'id #${updateTodoIdTaskId.taskId} !`,
+      `\n Modification de l'état de tâche d'id #${updateTodoIdTaskIdDto.taskId} !`,
     );
-    return this.todolistService.updateTaskToDone(updateTodoIdTaskId);
+    return this.todolistService.updateTaskToDone(updateTodoIdTaskIdDto);
   }
 
   @Delete(':id')

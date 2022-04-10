@@ -9,8 +9,9 @@ import { Todo } from './entities/todo.entity';
 import { CreateTodoDto } from './dto/create-todo.dto';
 import { UpdateTodoDto } from './dto/update-todo.dto';
 import { ID_LEN } from './todolist.constant';
-import { UpdateTodoIdTaskId } from '../task/dto/todoId-taskId.dto';
+import { UpdateTodoIdTaskIdDto } from '../task/dto/todoId-taskId.dto';
 import { TaskService } from '../task/task.service';
+import * as mongoose from 'mongoose';
 
 @Injectable()
 export class TodolistService {
@@ -37,15 +38,6 @@ export class TodolistService {
 
     return todo;
   }
-
-  // async createTask(task_title: string) {
-  //   console.log('création des tâches');
-  //   const task = new this.taskModel({
-  //     title: task_title,
-  //     status: TaskStatus.TODO,
-  //   });
-  //   return task.save();
-  // }
 
   async create(createTodoDto: CreateTodoDto) {
     console.log('tentative de création');
@@ -82,38 +74,74 @@ export class TodolistService {
     return existingTodo;
   }
 
-  async updateTaskToDone(updateTodoIdTaskId: UpdateTodoIdTaskId) {
-    console.log(` try to complete task : ${updateTodoIdTaskId.taskId}`);
+  async updateTaskToDone(updateTodoIdTaskIdDto: UpdateTodoIdTaskIdDto) {
+    console.log(` try to complete task : ${updateTodoIdTaskIdDto.taskId}`);
+    if (updateTodoIdTaskIdDto.todoId.length !== ID_LEN) {
+      throw new BadRequestException(
+        'Given todoId is incorrect (non required id size)',
+      );
+    }
     const existingTodo = await this.todoModel.findById(
-      updateTodoIdTaskId.todoId,
+      updateTodoIdTaskIdDto.todoId,
     );
     if (!existingTodo) {
       console.log(' Cannot complete the task!');
       throw new NotFoundException(
-        `Todo #${updateTodoIdTaskId.todoId} with taskId #${updateTodoIdTaskId.taskId} not found in the database`,
+        `Todo #${updateTodoIdTaskIdDto.todoId} with taskId #${updateTodoIdTaskIdDto.taskId} not found in the database`,
       );
     }
-    await this.taskService.changeStatusToDone(updateTodoIdTaskId.taskId);
-    console.log(' task completed');
-    return existingTodo;
+
+    if (
+      existingTodo.tasks.includes(
+        new mongoose.Types.ObjectId(updateTodoIdTaskIdDto.taskId),
+      )
+    ) {
+      await this.taskService.changeStatusToDone(updateTodoIdTaskIdDto.taskId);
+      console.log(
+        ' task status change to Todo ' +
+          new mongoose.Types.ObjectId(updateTodoIdTaskIdDto.taskId),
+      );
+      console.log(' task completed');
+
+      return existingTodo;
+    } else {
+      throw new NotFoundException(
+        `Task #${updateTodoIdTaskIdDto.taskId} isn't a task of #${updateTodoIdTaskIdDto.todoId}`,
+      );
+    }
   }
 
-  async updateTaskToTodo(updateTodoIdTaskId: UpdateTodoIdTaskId) {
+  async updateTaskToTodo(updateTodoIdTaskIdDto: UpdateTodoIdTaskIdDto) {
     console.log(
-      ` try to change the task status : ${updateTodoIdTaskId.taskId}`,
+      ` try to change the task status : ${updateTodoIdTaskIdDto.taskId}`,
     );
+    if (updateTodoIdTaskIdDto.todoId.length !== ID_LEN) {
+      throw new BadRequestException(
+        'Given todoId is incorrect (non required id size)',
+      );
+    }
     const existingTodo = await this.todoModel.findById(
-      updateTodoIdTaskId.todoId,
+      updateTodoIdTaskIdDto.todoId,
     );
     if (!existingTodo) {
       console.log(' Cannot complete the task!');
       throw new NotFoundException(
-        `Todo #${updateTodoIdTaskId.todoId} with taskId #${updateTodoIdTaskId.taskId} not found in the database`,
+        `Todo #${updateTodoIdTaskIdDto.todoId} with taskId #${updateTodoIdTaskIdDto.taskId} not found in the database`,
       );
     }
-    await this.taskService.changeStatusToTodo(updateTodoIdTaskId.taskId);
-    console.log(' task status change to Todo');
-    return existingTodo;
+    const taskId_ = new mongoose.Types.ObjectId(updateTodoIdTaskIdDto.taskId);
+    if (existingTodo.tasks.includes(taskId_)) {
+      await this.taskService.changeStatusToTodo(updateTodoIdTaskIdDto.taskId);
+      console.log(
+        ' task status change to Todo ' +
+          new mongoose.Types.ObjectId(updateTodoIdTaskIdDto.taskId),
+      );
+      return existingTodo;
+    } else {
+      throw new NotFoundException(
+        `Task #${updateTodoIdTaskIdDto.taskId} isn't a task of #${updateTodoIdTaskIdDto.todoId}`,
+      );
+    }
   }
 
   // async removeTaskFromTodo(updateTodoIdTaskId: UpdateTodoIdTaskId) {
