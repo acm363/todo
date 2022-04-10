@@ -14,7 +14,7 @@ export class TaskController {
 
   @Delete()
   @Header('Returned-At', new Date().toLocaleString())
-  deleteAll(){
+  deleteAll() {
     console.log(`Suppression de toutes les tâches`);
     return this.taskService.removeAll();
   }
