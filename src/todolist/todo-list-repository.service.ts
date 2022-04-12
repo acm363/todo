@@ -1,8 +1,7 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
-import { TaskStatus, Todo } from './entities/todo.entity';
+import {Todo, TodoDocument} from './entities/todo.entity';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
-import { UpdateTaskDto, UpdateTodoDto } from './dto/todoDto';
 
 @Injectable()
 export class TodoListRepository {
@@ -13,18 +12,18 @@ export class TodoListRepository {
   }
 
   public async findAll(): Promise<Todo[]> {
-    return this.todoModel.find().exec();
+    return await this.todoModel.find().exec();
   }
 
   public async findOne(publicId: string): Promise<Todo> {
-    const todo = this.todoModel.findOne({ publicId: publicId }).exec();
+    const todo = await this.todoModel.findOne({ publicId: publicId }).exec();
     if (!todo) {
       throw new NotFoundException(`Todo with publicId #${publicId} not found in the database!`);
     }
     return todo;
   }
   public async save(todo: Todo): Promise <Todo>{
-    return this.todoModel.findOneAndUpdate({publicId: todo.publicId}, todo);
+    return (todo as TodoDocument).save();
   }
 
   public async remove(publicId: string): Promise<Todo> {
@@ -38,6 +37,5 @@ export class TodoListRepository {
   public async removeAll(){
     return await this.todoModel.deleteMany().exec();
   }
-
 
 }

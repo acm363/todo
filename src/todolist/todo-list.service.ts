@@ -1,4 +1,4 @@
-import {Injectable, Logger, NotFoundException} from '@nestjs/common';
+import {BadRequestException, Injectable, Logger, NotFoundException} from '@nestjs/common';
 import { TaskStatus, Todo, TodoTask } from './entities/todo.entity';
 import { TodoListRepository } from './todo-list-repository.service';
 import { CreateTodoDto, UpdateTaskDto, UpdateTodoDto } from './dto/todoDto';
@@ -6,7 +6,6 @@ import { v4 as uuidv4 } from 'uuid';
 
 @Injectable()
 export class TodoListService {
-  private readonly logger = new Logger(TodoListService.name);
 
   constructor(private readonly todoRepository: TodoListRepository) {}
 
@@ -29,7 +28,6 @@ export class TodoListService {
         status: TaskStatus.TODO, // By default, we want all new task to be in this state.
       } as TodoTask;
     });
-
     return this.todoRepository.create(todo);
   }
 
@@ -38,7 +36,8 @@ export class TodoListService {
     if (!existingTodo) {
       throw new NotFoundException(`Todo with publicId #${publicId} not found in the database!`);
     }
-    existingTodo.title = updateTodoDto.title;
+    if(updateTodoDto.title)
+      existingTodo.title = updateTodoDto.title;
     return this.todoRepository.save(existingTodo);
   }
 
@@ -47,7 +46,12 @@ export class TodoListService {
     if (!existingTodo) {
       throw new NotFoundException(`Todo with publicId #${publicId} not found in the database!`);
     }
-    existingTodo.tasks[updateTaskDto.taskIndex].status = updateTaskDto.todoBool ? TaskStatus.TODO : TaskStatus.DONE;
+    if( 0 <= updateTaskDto.taskIndex && updateTaskDto.taskIndex < existingTodo.tasks.length){
+      existingTodo.tasks[updateTaskDto.taskIndex].status = updateTaskDto.todoBool ? TaskStatus.TODO : TaskStatus.DONE;
+    }
+    else{
+      throw new BadRequestException(`The given task index doesn't exist in the todo tasks list!`);
+    }
     return this.todoRepository.save(existingTodo);
   }
 
