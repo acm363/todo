@@ -1,4 +1,4 @@
-import { IsString } from 'class-validator';
+import { IsBoolean, IsNumber, IsString } from 'class-validator';
 
 export class CreateTodoDto {
   @IsString()
@@ -7,19 +7,28 @@ export class CreateTodoDto {
   readonly tasks: string[];
 }
 
+let isNumber = IsNumber;
 
-export class UpdateTodoDto{
-    @IsString()
-    readonly title: String;
+export class UpdateTaskDto {
+  @IsNumber()
+  readonly taskIndex: number;
+  @IsBoolean()
+  readonly todoBool: boolean;
+}
+
+
+export class UpdateTodoDto {
+  @IsString()
+  readonly title: string;
 }
 
 export class ViewableTodoDto {
-    readonly title: string;
-    readonly tasks: TodoTaskDto[];
-    readonly createdAt: string;
+  readonly title: string;
+  readonly tasks: TodoTaskDto[];
+  readonly createdAt: string;
 }
 
 export class TodoTaskDto {
-    readonly label: string;
-    readonly status: string;
+  readonly label: string;
+  readonly status: string;
 }

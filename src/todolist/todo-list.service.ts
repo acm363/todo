@@ -1,7 +1,7 @@
-import { Injectable, Logger } from '@nestjs/common';
+import {Injectable, Logger, NotFoundException} from '@nestjs/common';
 import { TaskStatus, Todo, TodoTask } from './entities/todo.entity';
 import { TodoListRepository } from './todo-list-repository.service';
-import { CreateTodoDto, UpdateTodoDto } from './dto/todoDto';
+import { CreateTodoDto, UpdateTaskDto, UpdateTodoDto } from './dto/todoDto';
 import { v4 as uuidv4 } from 'uuid';
 
 @Injectable()
@@ -18,7 +18,7 @@ export class TodoListService {
     return this.todoRepository.findOne(publicId);
   }
 
-  async create(createTodoDto: CreateTodoDto): Promise<Todo> {
+  public async create(createTodoDto: CreateTodoDto): Promise<Todo> {
     const todo = new Todo();
     todo.publicId = uuidv4();
     todo.title = createTodoDto.title;
@@ -33,11 +33,29 @@ export class TodoListService {
     return this.todoRepository.create(todo);
   }
 
-  // public async updateTodo(publicId: string, updateTodoDto: UpdateTodoDto): Promise<Todo> {
-  //   return this.todoRepository.updateTodo(publicId, updateTodoDto);
-  // }
+  public async updateTodo(publicId: string, updateTodoDto: UpdateTodoDto): Promise<Todo> {
+    let existingTodo = await this.todoRepository.findOne(publicId);
+    if (!existingTodo) {
+      throw new NotFoundException(`Todo with publicId #${publicId} not found in the database!`);
+    }
+    existingTodo.title = updateTodoDto.title;
+    return this.todoRepository.save(existingTodo);
+  }
 
-  public async remove(publicId: string): Promise<UpdateTodoDto> {
+  public async updateTaskState(publicId: string, updateTaskDto: UpdateTaskDto): Promise<Todo> {
+    const existingTodo = await this.todoRepository.findOne(publicId);
+    if (!existingTodo) {
+      throw new NotFoundException(`Todo with publicId #${publicId} not found in the database!`);
+    }
+    existingTodo.tasks[updateTaskDto.taskIndex].status = updateTaskDto.todoBool ? TaskStatus.TODO : TaskStatus.DONE;
+    return this.todoRepository.save(existingTodo);
+  }
+
+  public async remove(publicId: string): Promise<Todo> {
     return this.todoRepository.remove(publicId);
+  }
+
+  public async removeAll() {
+    return this.todoRepository.removeAll();
   }
 }

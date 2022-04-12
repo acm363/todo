@@ -7,9 +7,8 @@ async function bootstrap() {
   const app = await NestFactory.create(AppModule);
   app.useGlobalPipes(
     new ValidationPipe({
-      whitelist: true, //permet de supprimer automatiquement les paramètres non voulus lors des requêtes POST
-      transform: true, //permet de transformer automatiquement les données reçues en POST comme des instances de la DTO
-      forbidNonWhitelisted: true,
+      whitelist: true,
+      transform: true,
       enableDebugMessages: true,
     }),
   );
