@@ -1,5 +1,5 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
-import {Todo, TodoDocument} from './entities/todo.entity';
+import { Todo, TodoDocument } from './entities/todo.entity';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 
@@ -22,20 +22,18 @@ export class TodoListRepository {
     }
     return todo;
   }
-  public async save(todo: Todo): Promise <Todo>{
+
+  public async save(todo: Todo): Promise<Todo> {
     return (todo as TodoDocument).save();
   }
 
-  public async remove(publicId: string): Promise<Todo> {
+  public async remove(publicId: string): Promise<boolean> {
     const todo = await this.todoModel.findOneAndRemove({ publicId: publicId }).exec();
-    if (!todo) {
-      throw new NotFoundException(`Todo with publicId #${publicId} not found in the database!`);
-    }
-    return todo;
+    return todo ? true : false;
   }
 
-  public async removeAll(){
-    return await this.todoModel.deleteMany().exec();
+  public async removeAll(): Promise<boolean> {
+    const deleteResult = await this.todoModel.deleteMany().exec();
+    return deleteResult.deletedCount > 0;
   }
-
 }

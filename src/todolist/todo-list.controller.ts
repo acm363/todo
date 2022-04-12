@@ -21,11 +21,10 @@ export class TodoListController {
 
   @Get(':id')
   @Header('Returned-At', new Date().toLocaleString())
-  public async findOne(@Param('id') publicId: string): Promise<ViewableTodoDto> {
-    this.logger.debug(`Get the todo of id ${publicId}!`);
-    const todo = await this.todoListService.findOne(publicId);
-    this.logger.log(todo);
-    if (todo) return this.toViewableTodoDto(todo);
+  public async findOne(@Param('id') todoId: string): Promise<ViewableTodoDto> {
+    this.logger.debug(`Get the todo of id ${todoId}!`);
+    const todo = await this.todoListService.findOne(todoId);
+    return this.toViewableTodoDto(todo);
   }
 
   @Post()
@@ -33,46 +32,38 @@ export class TodoListController {
   public async create(@Body() createTodoDto: CreateTodoDto): Promise<ViewableTodoDto> {
     this.logger.debug(`Create a todo -- ${JSON.stringify(createTodoDto)}`);
     const todo = await this.todoListService.create(createTodoDto);
-    if (todo) return this.toViewableTodoDto(todo);
+    return this.toViewableTodoDto(todo);
   }
 
-  @Patch(':publicId')
+  @Patch(':todoId')
   @Header('Returned-At', new Date().toLocaleString())
-  public async updateTodoTitle(
-    @Param('publicId') publicId: string,
-    @Body() updateTodoDto: UpdateTodoDto,
-  ): Promise<ViewableTodoDto> {
-    this.logger.debug(`Update the todo of publicId #${publicId}`);
-    const todo = await this.todoListService.updateTodo(publicId, updateTodoDto);
-    if (todo) return this.toViewableTodoDto(todo);
+  public async updateTodoTitle(@Param('todoId') todoId: string, @Body() updateTodoDto: UpdateTodoDto): Promise<ViewableTodoDto> {
+    this.logger.debug(`Update the todo of todoId #${todoId}`);
+    const todo = await this.todoListService.updateTodo(todoId, updateTodoDto);
+    return this.toViewableTodoDto(todo);
   }
 
-  @Patch('updateTask/:publicId')
+  @Patch('updateTask/:todoId')
   @Header('Returned-At', new Date().toLocaleString())
-  public async updateTaskState(
-    @Param('publicId') publicId: string,
-    @Body() updateTaskDto: UpdateTaskDto,
-  ): Promise<ViewableTodoDto> {
-    this.logger.debug(`Update the task ${updateTaskDto.taskIndex + 1} state in the todo ${publicId}`);
-    const todo = await this.todoListService.updateTaskState(publicId, updateTaskDto);
-    if (todo) return this.toViewableTodoDto(todo);
+  public async updateTaskState(@Param('todoId') todoId: string, @Body() updateTaskDto: UpdateTaskDto): Promise<ViewableTodoDto> {
+    this.logger.debug(`Update the task ${updateTaskDto.taskIndex + 1} state in the todo ${todoId}`);
+    const todo = await this.todoListService.updateTaskState(todoId, updateTaskDto);
+    return this.toViewableTodoDto(todo);
   }
 
-  @Delete(':publicId')
+  @Delete(':todoId')
   @Header('Returned-At', new Date().toLocaleString())
-  public async removeOneTodo(@Param('publicId') publicId: string): Promise<ViewableTodoDto> {
-    this.logger.debug(`Delete the todo of id #${publicId}`);
-    const todo = await this.todoListService.remove(publicId);
-    if (todo) return this.toViewableTodoDto(todo);
-    else this.logger.error(`Nothing can be delete - todo doesn't exist`);
+  public async removeOneTodo(@Param('todoId') todoId: string): Promise<boolean> {
+    this.logger.debug(`Delete the todo of id #${todoId}`);
+    const isDeleted = await this.todoListService.remove(todoId);
+    return isDeleted;
   }
 
   @Delete()
   @Header('Returned-At', new Date().toLocaleString())
-  public async removeAll() {
+  public async removeAll(): Promise<boolean> {
     this.logger.debug(`Delete all the todo in the database`);
-    const todos = await this.todoListService.removeAll();
-    return todos;
+    return await this.todoListService.removeAll();
   }
 
   private toViewableTodoDto(todo: Todo): ViewableTodoDto {

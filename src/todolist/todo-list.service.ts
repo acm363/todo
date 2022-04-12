@@ -1,4 +1,4 @@
-import {BadRequestException, Injectable, Logger, NotFoundException} from '@nestjs/common';
+import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
 import { TaskStatus, Todo, TodoTask } from './entities/todo.entity';
 import { TodoListRepository } from './todo-list-repository.service';
 import { CreateTodoDto, UpdateTaskDto, UpdateTodoDto } from './dto/todoDto';
@@ -6,22 +6,21 @@ import { v4 as uuidv4 } from 'uuid';
 
 @Injectable()
 export class TodoListService {
-
   constructor(private readonly todoRepository: TodoListRepository) {}
 
   public async findAll(): Promise<Todo[]> {
     return this.todoRepository.findAll();
   }
 
-  public async findOne(publicId: string): Promise<Todo> {
-    return this.todoRepository.findOne(publicId);
+  public async findOne(todoId: string): Promise<Todo> {
+    return this.todoRepository.findOne(todoId);
   }
 
   public async create(createTodoDto: CreateTodoDto): Promise<Todo> {
     const todo = new Todo();
-    todo.publicId = uuidv4();
+    todo.todoId = uuidv4();
     todo.title = createTodoDto.title;
-    todo.createdAt = new Date();
+    todo.createdAt = new Date(); // we want the date be saved in the same format whatever the base
     todo.tasks = createTodoDto.tasks.map((task) => {
       return {
         label: task,
@@ -31,35 +30,35 @@ export class TodoListService {
     return this.todoRepository.create(todo);
   }
 
-  public async updateTodo(publicId: string, updateTodoDto: UpdateTodoDto): Promise<Todo> {
-    let existingTodo = await this.todoRepository.findOne(publicId);
+  public async updateTodo(todoId: string, updateTodoDto: UpdateTodoDto): Promise<Todo> {
+    let existingTodo = await this.todoRepository.findOne(todoId);
     if (!existingTodo) {
-      throw new NotFoundException(`Todo with publicId #${publicId} not found in the database!`);
+      throw new NotFoundException(`Todo with todoId #${todoId} not found in the database!`);
     }
-    if(updateTodoDto.title)
+    if (updateTodoDto.title) {
       existingTodo.title = updateTodoDto.title;
+    }
     return this.todoRepository.save(existingTodo);
   }
 
-  public async updateTaskState(publicId: string, updateTaskDto: UpdateTaskDto): Promise<Todo> {
-    const existingTodo = await this.todoRepository.findOne(publicId);
+  public async updateTaskState(todoId: string, updateTaskDto: UpdateTaskDto): Promise<Todo> {
+    const existingTodo = await this.todoRepository.findOne(todoId);
     if (!existingTodo) {
-      throw new NotFoundException(`Todo with publicId #${publicId} not found in the database!`);
+      throw new NotFoundException(`Todo with todoId #${todoId} not found in the database!`);
     }
-    if( 0 <= updateTaskDto.taskIndex && updateTaskDto.taskIndex < existingTodo.tasks.length){
-      existingTodo.tasks[updateTaskDto.taskIndex].status = updateTaskDto.todoBool ? TaskStatus.TODO : TaskStatus.DONE;
-    }
-    else{
+    if (updateTaskDto.taskIndex < 0 && updateTaskDto.taskIndex >= existingTodo.tasks.length) {
       throw new BadRequestException(`The given task index doesn't exist in the todo tasks list!`);
     }
+    // if todoBool is true, the task is in the TODO state, else the task is in the DONE state
+    existingTodo.tasks[updateTaskDto.taskIndex].status = updateTaskDto.todoBool ? TaskStatus.TODO : TaskStatus.DONE;
     return this.todoRepository.save(existingTodo);
   }
 
-  public async remove(publicId: string): Promise<Todo> {
-    return this.todoRepository.remove(publicId);
+  public async remove(todoId: string): Promise<boolean> {
+    return this.todoRepository.remove(todoId);
   }
 
-  public async removeAll() {
+  public async removeAll(): Promise<boolean> {
     return this.todoRepository.removeAll();
   }
 }

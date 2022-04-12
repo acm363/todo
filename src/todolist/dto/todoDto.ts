@@ -1,4 +1,4 @@
-import { IsBoolean, IsNumber, IsString } from 'class-validator';
+import { IsBoolean, IsNumber, IsString, Min } from 'class-validator';
 
 export class CreateTodoDto {
   @IsString()
@@ -7,15 +7,13 @@ export class CreateTodoDto {
   readonly tasks: string[];
 }
 
-let isNumber = IsNumber;
-
 export class UpdateTaskDto {
   @IsNumber()
+  @Min(0)
   readonly taskIndex: number;
   @IsBoolean()
   readonly todoBool: boolean;
 }
-
 
 export class UpdateTodoDto {
   @IsString()

@@ -5,7 +5,7 @@ import { IsString } from 'class-validator';
 @Schema()
 export class Todo {
   @Prop()
-  publicId: string;
+  todoId: string;
 
   @Prop()
   title: string;
