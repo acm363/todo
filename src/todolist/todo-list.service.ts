@@ -1,19 +1,26 @@
-import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
-import { TaskStatus, Todo, TodoTask } from './entities/todo.entity';
-import { TodoListRepository } from './todo-list-repository.service';
-import { CreateTodoDto, UpdateTaskDto, UpdateTodoDto } from './dto/todoDto';
-import { v4 as uuidv4 } from 'uuid';
+import {BadRequestException, Injectable, Logger, NotFoundException} from '@nestjs/common';
+import {TaskStatus, Todo, TodoTask} from './entities/todo.entity';
+import {TodoListRepository} from './todo-list-repository.service';
+import {CreateTodoDto, UpdateTodoDto} from './dto/todoDto';
+import {v4 as uuidv4} from 'uuid';
 
 @Injectable()
 export class TodoListService {
-  constructor(private readonly todoRepository: TodoListRepository) {}
+  private readonly logger = new Logger(TodoListService.name);
+
+  constructor(private readonly todoRepository: TodoListRepository) {
+  }
 
   public async findAll(): Promise<Todo[]> {
     return this.todoRepository.findAll();
   }
 
   public async findOne(todoId: string): Promise<Todo> {
-    return this.todoRepository.findOne(todoId);
+    const todo = this.todoRepository.findOne(todoId);
+    if (todo) {
+      return todo;
+    }
+    throw new NotFoundException(`Todo with publicId #${todoId} not found in the database!`);
   }
 
   public async create(createTodoDto: CreateTodoDto): Promise<Todo> {
@@ -35,22 +42,23 @@ export class TodoListService {
     if (!existingTodo) {
       throw new NotFoundException(`Todo with todoId #${todoId} not found in the database!`);
     }
+
+    for (const updateTask of updateTodoDto.tasks) {
+      if (!updateTask.taskIndex || (updateTask.taskIndex < 0 && updateTask.taskIndex >= existingTodo.tasks.length)) {
+        throw new BadRequestException(`The given task index doesn't exist in the todo tasks list!`);
+      }
+
+      const todoTask = existingTodo.tasks[updateTask.taskIndex];
+      todoTask.status = updateTask.todoBool ? TaskStatus.TODO : TaskStatus.DONE;
+
+      if (updateTask.label) {
+        todoTask.label = updateTask.label;
+      }
+    }
+    // existingTodo.tasks = [];
     if (updateTodoDto.title) {
       existingTodo.title = updateTodoDto.title;
     }
-    return this.todoRepository.save(existingTodo);
-  }
-
-  public async updateTaskState(todoId: string, updateTaskDto: UpdateTaskDto): Promise<Todo> {
-    const existingTodo = await this.todoRepository.findOne(todoId);
-    if (!existingTodo) {
-      throw new NotFoundException(`Todo with todoId #${todoId} not found in the database!`);
-    }
-    if (updateTaskDto.taskIndex < 0 && updateTaskDto.taskIndex >= existingTodo.tasks.length) {
-      throw new BadRequestException(`The given task index doesn't exist in the todo tasks list!`);
-    }
-    // if todoBool is true, the task is in the TODO state, else the task is in the DONE state
-    existingTodo.tasks[updateTaskDto.taskIndex].status = updateTaskDto.todoBool ? TaskStatus.TODO : TaskStatus.DONE;
     return this.todoRepository.save(existingTodo);
   }
 

@@ -1,4 +1,5 @@
-import { IsBoolean, IsNumber, IsString, Min } from 'class-validator';
+import { IsBoolean, IsNumber, IsOptional, IsString, Min } from 'class-validator';
+import { TaskStatus } from '../entities/todo.entity';
 
 export class CreateTodoDto {
   @IsString()
@@ -12,12 +13,18 @@ export class UpdateTaskDto {
   @Min(0)
   readonly taskIndex: number;
   @IsBoolean()
+  @IsOptional()
   readonly todoBool: boolean;
+  @IsString()
+  @IsOptional()
+  readonly label: string;
 }
 
 export class UpdateTodoDto {
   @IsString()
   readonly title: string;
+  @IsOptional()
+  readonly tasks: UpdateTaskDto[];
 }
 
 export class ViewableTodoDto {
@@ -28,5 +35,5 @@ export class ViewableTodoDto {
 
 export class TodoTaskDto {
   readonly label: string;
-  readonly status: string;
+  readonly status: TaskStatus;
 }

@@ -1,4 +1,4 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { Todo, TodoDocument } from './entities/todo.entity';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
@@ -15,16 +15,21 @@ export class TodoListRepository {
     return await this.todoModel.find().exec();
   }
 
-  public async findOne(publicId: string): Promise<Todo> {
-    const todo = await this.todoModel.findOne({ publicId: publicId }).exec();
-    if (!todo) {
-      throw new NotFoundException(`Todo with publicId #${publicId} not found in the database!`);
-    }
-    return todo;
+  public async findOne(todoId: string): Promise<Todo> {
+    return this.todoModel
+      .findOne()
+      .where({
+        todoId: todoId,
+      }).setOptions({
+          strict: true
+        })
+      .exec();
   }
 
   public async save(todo: Todo): Promise<Todo> {
-    return (todo as TodoDocument).save();
+    const todoDocument = (todo as TodoDocument)
+    todoDocument.markModified('tasks');
+    return todoDocument.save();
   }
 
   public async remove(publicId: string): Promise<boolean> {

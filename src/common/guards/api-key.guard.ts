@@ -8,6 +8,7 @@ export class ApiKeyGuard implements CanActivate {
   private readonly logger = new Logger(ApiKeyGuard.name);
 
   constructor(private readonly configService: ConfigService) {}
+
   canActivate(context: ExecutionContext): boolean | Promise<boolean> | Observable<boolean> {
     const request = context.switchToHttp().getRequest<Request>();
     const authHeader = request.header('Authorization');

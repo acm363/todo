@@ -35,28 +35,28 @@ export class TodoListController {
     return this.toViewableTodoDto(todo);
   }
 
+  // Merge all update methods.
   @Patch(':todoId')
   @Header('Returned-At', new Date().toLocaleString())
-  public async updateTodoTitle(@Param('todoId') todoId: string, @Body() updateTodoDto: UpdateTodoDto): Promise<ViewableTodoDto> {
+  public async updateTodo(@Param('todoId') todoId: string, @Body() updateTodoDto: UpdateTodoDto): Promise<ViewableTodoDto> {
     this.logger.debug(`Update the todo of todoId #${todoId}`);
     const todo = await this.todoListService.updateTodo(todoId, updateTodoDto);
     return this.toViewableTodoDto(todo);
   }
 
-  @Patch('updateTask/:todoId')
-  @Header('Returned-At', new Date().toLocaleString())
-  public async updateTaskState(@Param('todoId') todoId: string, @Body() updateTaskDto: UpdateTaskDto): Promise<ViewableTodoDto> {
-    this.logger.debug(`Update the task ${updateTaskDto.taskIndex + 1} state in the todo ${todoId}`);
-    const todo = await this.todoListService.updateTaskState(todoId, updateTaskDto);
-    return this.toViewableTodoDto(todo);
-  }
+  // @Patch('updateTask/:todoId')
+  // @Header('Returned-At', new Date().toLocaleString())
+  // public async updateTaskState(@Param('todoId') todoId: string, @Body() updateTaskDto: UpdateTaskDto): Promise<ViewableTodoDto> {
+  //   this.logger.debug(`Update the task ${updateTaskDto.taskIndex + 1} state in the todo ${todoId}`);
+  //   const todo = await this.todoListService.updateTaskState(todoId, updateTaskDto);
+  //   return this.toViewableTodoDto(todo);
+  // }
 
   @Delete(':todoId')
   @Header('Returned-At', new Date().toLocaleString())
   public async removeOneTodo(@Param('todoId') todoId: string): Promise<boolean> {
     this.logger.debug(`Delete the todo of id #${todoId}`);
-    const isDeleted = await this.todoListService.remove(todoId);
-    return isDeleted;
+    return this.todoListService.remove(todoId);
   }
 
   @Delete()

@@ -14,7 +14,6 @@ export class Todo {
   tasks: TodoTask[];
 
   @Prop()
-  @IsString()
   createdAt: Date;
 }
 
