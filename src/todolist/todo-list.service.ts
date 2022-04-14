@@ -1,15 +1,14 @@
-import {BadRequestException, Injectable, Logger, NotFoundException} from '@nestjs/common';
-import {TaskStatus, Todo, TodoTask} from './entities/todo.entity';
-import {TodoListRepository} from './todo-list-repository.service';
-import {CreateTodoDto, UpdateTodoDto} from './dto/todoDto';
-import {v4 as uuidv4} from 'uuid';
+import { BadRequestException, Injectable, Logger, NotFoundException } from '@nestjs/common';
+import { TaskStatus, Todo, TodoTask } from './entities/todo.entity';
+import { TodoListRepository } from './todo-list-repository.service';
+import { CreateTodoDto, UpdateTodoDto } from './dto/todoDto';
+import { v4 as uuidv4 } from 'uuid';
 
 @Injectable()
 export class TodoListService {
   private readonly logger = new Logger(TodoListService.name);
 
-  constructor(private readonly todoRepository: TodoListRepository) {
-  }
+  constructor(private readonly todoRepository: TodoListRepository) {}
 
   public async findAll(): Promise<Todo[]> {
     return this.todoRepository.findAll();
@@ -50,7 +49,7 @@ export class TodoListService {
       }
 
       const todoTask = existingTodo.tasks[updateTask.taskIndex];
-      todoTask.status = updateTask.todoBool ? TaskStatus.TODO : TaskStatus.DONE;
+      todoTask.status = updateTask.isInTodoState ? TaskStatus.TODO : TaskStatus.DONE;
 
       if (updateTask.label) {
         todoTask.label = updateTask.label;

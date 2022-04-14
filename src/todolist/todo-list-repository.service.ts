@@ -20,14 +20,15 @@ export class TodoListRepository {
       .findOne()
       .where({
         todoId: todoId,
-      }).setOptions({
-          strict: true
-        })
+      })
+      .setOptions({
+        strict: true,
+      })
       .exec();
   }
 
   public async save(todo: Todo): Promise<Todo> {
-    const todoDocument = (todo as TodoDocument)
+    const todoDocument = todo as TodoDocument;
     todoDocument.markModified('tasks');
     return todoDocument.save();
   }

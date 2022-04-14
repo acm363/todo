@@ -14,7 +14,7 @@ export class UpdateTaskDto {
   readonly taskIndex: number;
   @IsBoolean()
   @IsOptional()
-  readonly todoBool: boolean;
+  readonly isInTodoState: boolean;
   @IsString()
   @IsOptional()
   readonly label: string;
