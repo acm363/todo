@@ -1,4 +1,4 @@
-import { BadRequestException, Injectable, Logger, NotFoundException } from '@nestjs/common';
+import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
 import { TaskStatus, Todo, TodoTask } from './entities/todo.entity';
 import { TodoListRepository } from './todo-list-repository.service';
 import { CreateTodoDto, UpdateTodoDto } from './dto/todoDto';
@@ -6,7 +6,6 @@ import { v4 as uuidv4 } from 'uuid';
 
 @Injectable()
 export class TodoListService {
-  private readonly logger = new Logger(TodoListService.name);
 
   constructor(private readonly todoRepository: TodoListRepository) {}
 
@@ -16,7 +15,6 @@ export class TodoListService {
 
   public async findOne(todoId: string): Promise<Todo> {
     const todo = await this.todoRepository.findOne(todoId);
-    this.logger.debug(`todo : ${todo}`);
     if (todo) {
       return todo;
     }
