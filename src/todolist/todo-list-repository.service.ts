@@ -16,7 +16,7 @@ export class TodoListRepository {
   }
 
   public async findOne(todoId: string): Promise<Todo> {
-    return this.todoModel
+    return await this.todoModel
       .findOne()
       .where({
         todoId: todoId,
@@ -34,7 +34,7 @@ export class TodoListRepository {
 
   public async remove(publicId: string): Promise<boolean> {
     const todo = await this.todoModel.findOneAndRemove({ publicId: publicId }).exec();
-    return todo ? true : false;
+    return !!todo;
   }
 
   public async removeAll(): Promise<boolean> {

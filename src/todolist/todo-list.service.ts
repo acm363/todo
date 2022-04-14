@@ -16,11 +16,12 @@ export class TodoListService {
   }
 
   public async findOne(todoId: string): Promise<Todo> {
-    const todo = this.todoRepository.findOne(todoId);
+    const todo = await this.todoRepository.findOne(todoId);
+    this.logger.debug(`todo : ${todo}`);
     if (todo) {
       return todo;
     }
-    throw new NotFoundException(`Todo with publicId #${todoId} not found in the database!`);
+    throw new NotFoundException(`Todo with todoId #${todoId} not found in the database!`);
   }
 
   public async create(createTodoDto: CreateTodoDto): Promise<Todo> {
@@ -44,7 +45,7 @@ export class TodoListService {
     }
 
     for (const updateTask of updateTodoDto.tasks) {
-      if (!updateTask.taskIndex || (updateTask.taskIndex < 0 && updateTask.taskIndex >= existingTodo.tasks.length)) {
+      if (isNaN(updateTask.taskIndex) || (updateTask.taskIndex < 0 && updateTask.taskIndex >= existingTodo.tasks.length)) {
         throw new BadRequestException(`The given task index doesn't exist in the todo tasks list!`);
       }
 

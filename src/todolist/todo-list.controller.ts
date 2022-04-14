@@ -1,6 +1,6 @@
 import { Body, Controller, Delete, Get, Header, Logger, Param, Patch, Post } from '@nestjs/common';
 import { TodoListService } from './todo-list.service';
-import { CreateTodoDto, TodoTaskDto, UpdateTaskDto, UpdateTodoDto, ViewableTodoDto } from './dto/todoDto';
+import { CreateTodoDto, TodoTaskDto, UpdateTodoDto, ViewableTodoDto } from './dto/todoDto';
 import { Todo } from './entities/todo.entity';
 
 @Controller('todolist')
@@ -35,7 +35,6 @@ export class TodoListController {
     return this.toViewableTodoDto(todo);
   }
 
-  // Merge all update methods.
   @Patch(':todoId')
   @Header('Returned-At', new Date().toLocaleString())
   public async updateTodo(@Param('todoId') todoId: string, @Body() updateTodoDto: UpdateTodoDto): Promise<ViewableTodoDto> {
@@ -43,14 +42,6 @@ export class TodoListController {
     const todo = await this.todoListService.updateTodo(todoId, updateTodoDto);
     return this.toViewableTodoDto(todo);
   }
-
-  // @Patch('updateTask/:todoId')
-  // @Header('Returned-At', new Date().toLocaleString())
-  // public async updateTaskState(@Param('todoId') todoId: string, @Body() updateTaskDto: UpdateTaskDto): Promise<ViewableTodoDto> {
-  //   this.logger.debug(`Update the task ${updateTaskDto.taskIndex + 1} state in the todo ${todoId}`);
-  //   const todo = await this.todoListService.updateTaskState(todoId, updateTaskDto);
-  //   return this.toViewableTodoDto(todo);
-  // }
 
   @Delete(':todoId')
   @Header('Returned-At', new Date().toLocaleString())
