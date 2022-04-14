@@ -42,7 +42,7 @@ export class TodoListService {
     }
 
     for (const updateTask of updateTodoDto.tasks) {
-      if (updateTask.taskIndex < 0 && updateTask.taskIndex >= existingTodo.tasks.length) {
+      if (updateTask.taskIndex < 0 || updateTask.taskIndex >= existingTodo.tasks.length) {
         throw new BadRequestException(`The given task index doesn't exist in the todo tasks list!`);
       }
 
