@@ -44,7 +44,7 @@ export class TodoListService {
     }
 
     for (const updateTask of updateTodoDto.tasks) {
-      if (isNaN(updateTask.taskIndex) || (updateTask.taskIndex < 0 && updateTask.taskIndex >= existingTodo.tasks.length)) {
+      if (updateTask.taskIndex < 0 && updateTask.taskIndex >= existingTodo.tasks.length) {
         throw new BadRequestException(`The given task index doesn't exist in the todo tasks list!`);
       }
 
@@ -55,7 +55,6 @@ export class TodoListService {
         todoTask.label = updateTask.label;
       }
     }
-    // existingTodo.tasks = [];
     if (updateTodoDto.title) {
       existingTodo.title = updateTodoDto.title;
     }
