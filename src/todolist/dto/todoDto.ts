@@ -1,6 +1,6 @@
-import {IsArray, IsBoolean, IsNumber, IsOptional, IsString, Min, ValidateNested} from 'class-validator';
+import { IsArray, IsBoolean, IsNumber, IsOptional, IsString, Min, ValidateNested } from 'class-validator';
 import { TaskStatus } from '../entities/todo.entity';
-import {Type} from "class-transformer";
+import { Type } from 'class-transformer';
 
 export class CreateTodoDto {
   @IsString()
@@ -25,9 +25,9 @@ export class UpdateTodoDto {
   @IsString()
   readonly title: string;
   @IsArray()
-  @ValidateNested({each: true})
+  @ValidateNested({ each: true })
   @Type(() => UpdateTaskDto)
-  readonly tasks: UpdateTaskDto[];
+  readonly tasks: UpdateTaskDto[]; // Tasks isn't optional to avoid another verification in todoList service when it's not given in the DTO.
 }
 
 export class ViewableTodoDto {
