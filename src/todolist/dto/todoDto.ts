@@ -23,6 +23,7 @@ export class UpdateTaskDto {
 
 export class UpdateTodoDto {
   @IsString()
+  @IsOptional()
   readonly title: string;
   @IsArray()
   @ValidateNested({ each: true })
