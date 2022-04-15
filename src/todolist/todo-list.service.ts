@@ -6,7 +6,6 @@ import { v4 as uuidv4 } from 'uuid';
 
 @Injectable()
 export class TodoListService {
-
   constructor(private readonly todoRepository: TodoListRepository) {}
 
   public async findAll(): Promise<Todo[]> {
@@ -47,7 +46,10 @@ export class TodoListService {
       }
 
       const todoTask = existingTodo.tasks[updateTask.taskIndex];
-      todoTask.status = updateTask.isInTodoState ? TaskStatus.TODO : TaskStatus.DONE;
+
+      if (updateTask.isInTodoState) {
+        todoTask.status = updateTask.isInTodoState  ? TaskStatus.TODO : TaskStatus.DONE;
+      }
 
       if (updateTask.label) {
         todoTask.label = updateTask.label;
