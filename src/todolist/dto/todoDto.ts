@@ -1,4 +1,4 @@
-import {IsBoolean, IsNumber, IsOptional, IsString, Min, ValidateNested} from 'class-validator';
+import {IsArray, IsBoolean, IsNumber, IsOptional, IsString, Min, ValidateNested} from 'class-validator';
 import { TaskStatus } from '../entities/todo.entity';
 import {Type} from "class-transformer";
 
@@ -24,7 +24,7 @@ export class UpdateTaskDto {
 export class UpdateTodoDto {
   @IsString()
   readonly title: string;
-  @IsOptional()
+  @IsArray()
   @ValidateNested({each: true})
   @Type(() => UpdateTaskDto)
   readonly tasks: UpdateTaskDto[];
