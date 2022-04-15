@@ -47,7 +47,7 @@ export class TodoListService {
 
       const todoTask = existingTodo.tasks[updateTask.taskIndex];
 
-      if (updateTask.isInTodoState) {
+      if (! (updateTask?.isInTodoState === undefined)) {
         todoTask.status = updateTask.isInTodoState  ? TaskStatus.TODO : TaskStatus.DONE;
       }
 
