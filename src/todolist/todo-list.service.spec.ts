@@ -3,12 +3,7 @@ import { TodoListRepository } from './todo-list-repository.service';
 import { createMock, DeepMocked } from '@golevelup/nestjs-testing';
 import { Test, TestingModule } from '@nestjs/testing';
 import { TaskStatus, Todo, TodoTask } from './entities/todo.entity';
-import {
-  CreateTodoDto,
-  TodoTaskDto,
-  UpdateTaskDto,
-  UpdateTodoDto,
-} from './dto/todoDto';
+import { CreateTodoDto, TodoTaskDto, UpdateTaskDto, UpdateTodoDto } from './dto/todoDto';
 import { BadRequestException, NotFoundException } from '@nestjs/common';
 
 describe('TodoListService', () => {
@@ -363,9 +358,7 @@ describe('TodoListService', () => {
     // Given.
     const existingTodoId = '54584f';
     const nonExistingTodoId = '54ze7f';
-    todoListRepositoryMock.remove
-      .mockResolvedValueOnce(true)
-      .mockResolvedValueOnce(false);
+    todoListRepositoryMock.remove.mockResolvedValueOnce(true).mockResolvedValueOnce(false);
 
     // When.
     const existingResult = await todoListService.remove(existingTodoId);
@@ -381,9 +374,7 @@ describe('TodoListService', () => {
 
   it('should remove all the TODO in the database and return the corresponding result.', async () => {
     // Given.
-    todoListRepositoryMock.removeAll
-      .mockResolvedValueOnce(true)
-      .mockResolvedValueOnce(false);
+    todoListRepositoryMock.removeAll.mockResolvedValueOnce(true).mockResolvedValueOnce(false);
 
     // When.
     const existingResult = await todoListService.removeAll();
@@ -397,11 +388,7 @@ describe('TodoListService', () => {
   it('should throw an error when find a non existing TODO.', async () => {
     // Given.
     const nonExistingTodoId = '454';
-    todoListRepositoryMock.findOne.mockRejectedValue(
-      new NotFoundException(
-        `Todo with todoId #${nonExistingTodoId} not found in the database!`,
-      ),
-    );
+    todoListRepositoryMock.findOne.mockResolvedValue(undefined);
 
     // When.
     const rejectedPromise = todoListService.findOne(nonExistingTodoId);
@@ -413,17 +400,12 @@ describe('TodoListService', () => {
   it('should throw error when updating non existing TodoId.', async () => {
     // When.
     const nonExistingTodoId = '444dss';
-    todoListRepositoryMock.findOne.mockRejectedValue(
-      new NotFoundException(
-        `Todo with todoId #${nonExistingTodoId} not found in the database!`,
-      ),
-    );
-    // Given.
-    const rejectedPromise = todoListService.updateTodo(
-      nonExistingTodoId,
-      undefined,
-    );
+    todoListRepositoryMock.findOne.mockResolvedValue(undefined);
 
+    // Given.
+    const rejectedPromise = todoListService.updateTodo(nonExistingTodoId, undefined);
+
+    // The update method will throw a NotFoundException.
     // Then.
     await expect(rejectedPromise).rejects.toThrow(NotFoundException);
   });
