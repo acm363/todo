@@ -45,8 +45,8 @@ $ npm run start:dev
 # production mode
 $ npm run start:prod
 
-# launch mongodb for connection (if mongo is local)
-$ mkdir db 
+# launch mongodb for connection (if mongo is local and mongdb client is not running)
+$ mkdir db  (only on unix)
 $ mongodb --dbpath db
 ```
 
