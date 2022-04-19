@@ -3,7 +3,12 @@ import { TodoListRepository } from './todo-list-repository.service';
 import { createMock, DeepMocked } from '@golevelup/nestjs-testing';
 import { Test, TestingModule } from '@nestjs/testing';
 import { TaskStatus, Todo, TodoTask } from './entities/todo.entity';
-import { CreateTodoDto, TodoTaskDto, UpdateTaskDto, UpdateTodoDto } from './dto/todoDto';
+import {
+  CreateTodoDto,
+  TodoTaskDto,
+  UpdateTaskDto,
+  UpdateTodoDto,
+} from './dto/todoDto';
 import { BadRequestException, NotFoundException } from '@nestjs/common';
 
 describe('TodoListService', () => {
@@ -144,21 +149,21 @@ describe('TodoListService', () => {
       date = new Date();
       todoId = '45qss44';
       existingTodo = {
-        todoId : todoId,
-        createdAt : date,
-        title : 'Old Title',
-        tasks : [
+        todoId: todoId,
+        createdAt: date,
+        title: 'Old Title',
+        tasks: [
           {
-            label : 'task1',
-            status : TaskStatus.TODO,
+            label: 'task1',
+            status: TaskStatus.TODO,
           } as TodoTask,
           {
-            label : 'task2',
-            status : TaskStatus.TODO,
+            label: 'task2',
+            status: TaskStatus.TODO,
           } as TodoTask,
           {
-            label : 'task3',
-            status : TaskStatus.DONE,
+            label: 'task3',
+            status: TaskStatus.DONE,
           } as TodoTask,
         ],
       };
@@ -166,209 +171,209 @@ describe('TodoListService', () => {
       todoListRepositoryMock.save.mockResolvedValue(existingTodo);
     });
 
-      it('should update the corresponding todo with the given values.', async () => {
-        // Given.
-        const updateTodoDto = {
-          title: 'New Title',
-          tasks: [
-            {
-              taskIndex: 0,
-              isInTodoState: false,
-              label: 'new task 1',
-            } as UpdateTaskDto,
-            {
-              taskIndex: 2,
-              isInTodoState: true,
-              label: 'new task 3',
-            } as UpdateTaskDto,
-          ],
-        };
+    it('should update the corresponding todo with the given values.', async () => {
+      // Given.
+      const updateTodoDto = {
+        title: 'New Title',
+        tasks: [
+          {
+            taskIndex: 0,
+            isInTodoState: false,
+            label: 'new task 1',
+          } as UpdateTaskDto,
+          {
+            taskIndex: 2,
+            isInTodoState: true,
+            label: 'new task 3',
+          } as UpdateTaskDto,
+        ],
+      };
 
-        // When.
-        const result = await todoListService.updateTodo(todoId, updateTodoDto);
+      // When.
+      const result = await todoListService.updateTodo(todoId, updateTodoDto);
 
-        // Then.
-        expect(result).toStrictEqual({
-          todoId: todoId,
-          createdAt: date,
-          title: 'New Title',
-          tasks: [
-            {
-              label: 'new task 1',
-              status: TaskStatus.DONE,
-            } as TodoTask,
-            {
-              label: 'task2',
-              status: TaskStatus.TODO,
-            } as TodoTask,
-            {
-              label: 'new task 3',
-              status: TaskStatus.TODO,
-            } as TodoTask,
-          ],
-        } as Todo);
-      });
-
-      it('should update the task state when only the isInTodoState is given in the update task dto.', async () => {
-        // Given.
-        const updateTodoDto = {
-          tasks: [
-            {
-              taskIndex: 0,
-              isInTodoState: false,
-            } as UpdateTaskDto,
-          ],
-        } as UpdateTodoDto;
-
-        // When.
-        const result = await todoListService.updateTodo(todoId, updateTodoDto);
-
-        // Then.
-        expect(todoListRepositoryMock.findOne.mock.calls[0][0]).toBe(todoId);
-        expect(result).toMatchObject({
-          todoId: todoId,
-          createdAt: date,
-          title: 'Old Title',
-          tasks: [
-            {
-              label: 'task1',
-              status: TaskStatus.DONE,
-            } as TodoTask,
-            {
-              label : 'task2',
-              status : TaskStatus.TODO,
-            } as TodoTask,
-            {
-              label: 'task3',
-              status: TaskStatus.DONE,
-            } as TodoTask,
-          ],
-        } as Todo);
-      });
-      it('should update the todo with the given tasks only', async ()=>{
-        // Given.
-        const updateTodoDto = {
-          tasks: [
-            {
-              taskIndex: 1,
-              isInTodoState: false,
-              label: 'new task 2',
-            } as UpdateTaskDto,
-          ],
-        } as UpdateTodoDto;
-
-        // When.
-        const result = await todoListService.updateTodo(todoId, updateTodoDto);
-
-        // Then.
-        expect(todoListRepositoryMock.findOne.mock.calls[0][0]).toBe(todoId);
-        expect(result).toMatchObject({
-          todoId: todoId,
-          createdAt: date,
-          title: 'Old Title',
-          tasks: [
-            {
-              label: 'task1',
-              status: TaskStatus.TODO,
-            } as TodoTask,
-            {
-              label : 'new task 2',
-              status : TaskStatus.DONE,
-            } as TodoTask,
-            {
-              label: 'task3',
-              status: TaskStatus.DONE,
-            } as TodoTask,
-          ],
-        } as Todo);
-      });
-
-      it('should update the todo with the title only.', async ()=>{
-        // Given.
-        const updateTodoDto = {
-          title: 'New title',
-          tasks: [],
-        } as UpdateTodoDto;
-
-
-        // When.
-        const result =  await todoListService.updateTodo(todoId, updateTodoDto);
-
-        // Then.
-        expect(todoListRepositoryMock.findOne.mock.calls[0][0]).toBe(todoId);
-        expect(result).toMatchObject({
-          todoId: todoId,
-          createdAt: date,
-          title: 'New title',
-          tasks: [
-            {
-              label: 'task1',
-              status: TaskStatus.TODO,
-            } as TodoTask,
-            {
-              label : 'task2',
-              status : TaskStatus.TODO,
-            } as TodoTask,
-            {
-              label: 'task3',
-              status: TaskStatus.DONE,
-            } as TodoTask,
-          ],
-        } as Todo);
-      });
-
-      it('should update the tasks with the label only.', async ()=>{
-        // Given.
-        const updateTodoDto = {
-          tasks: [
-            {
-              taskIndex: 0,
-              label :'new task 1'
-            } as UpdateTaskDto,
-          ],
-        } as UpdateTodoDto;
-
-        // When.
-        const result = await todoListService.updateTodo(todoId, updateTodoDto);
-
-        // Then.
-        expect(todoListRepositoryMock.findOne.mock.calls[0][0]).toBe(todoId);
-        expect(result).toMatchObject({
-          todoId: todoId,
-          createdAt: date,
-          title: 'Old Title',
-          tasks: [
-            {
-              label: 'new task 1',
-              status: TaskStatus.TODO,
-            } as TodoTask,
-            {
-              label : 'task2',
-              status : TaskStatus.TODO,
-            } as TodoTask,
-            {
-              label: 'task3',
-              status: TaskStatus.DONE,
-            } as TodoTask,
-          ],
-        } as Todo);
-
-      })
+      // Then.
+      expect(result).toStrictEqual({
+        todoId: todoId,
+        createdAt: date,
+        title: 'New Title',
+        tasks: [
+          {
+            label: 'new task 1',
+            status: TaskStatus.DONE,
+          } as TodoTask,
+          {
+            label: 'task2',
+            status: TaskStatus.TODO,
+          } as TodoTask,
+          {
+            label: 'new task 3',
+            status: TaskStatus.TODO,
+          } as TodoTask,
+        ],
+      } as Todo);
     });
+
+    it('should update the task state when only the isInTodoState is given in the update task dto.', async () => {
+      // Given.
+      const updateTodoDto = {
+        tasks: [
+          {
+            taskIndex: 0,
+            isInTodoState: false,
+          } as UpdateTaskDto,
+        ],
+      } as UpdateTodoDto;
+
+      // When.
+      const result = await todoListService.updateTodo(todoId, updateTodoDto);
+
+      // Then.
+      expect(todoListRepositoryMock.findOne).toBeCalledWith(todoId);
+      expect(result).toMatchObject({
+        todoId: todoId,
+        createdAt: date,
+        title: 'Old Title',
+        tasks: [
+          {
+            label: 'task1',
+            status: TaskStatus.DONE,
+          } as TodoTask,
+          {
+            label: 'task2',
+            status: TaskStatus.TODO,
+          } as TodoTask,
+          {
+            label: 'task3',
+            status: TaskStatus.DONE,
+          } as TodoTask,
+        ],
+      } as Todo);
+    });
+    it('should update the todo with the given tasks only', async () => {
+      // Given.
+      const updateTodoDto = {
+        tasks: [
+          {
+            taskIndex: 1,
+            isInTodoState: false,
+            label: 'new task 2',
+          } as UpdateTaskDto,
+        ],
+      } as UpdateTodoDto;
+
+      // When.
+      const result = await todoListService.updateTodo(todoId, updateTodoDto);
+
+      // Then.
+      expect(todoListRepositoryMock.findOne).toBeCalledWith(todoId);
+      expect(result).toMatchObject({
+        todoId: todoId,
+        createdAt: date,
+        title: 'Old Title',
+        tasks: [
+          {
+            label: 'task1',
+            status: TaskStatus.TODO,
+          } as TodoTask,
+          {
+            label: 'new task 2',
+            status: TaskStatus.DONE,
+          } as TodoTask,
+          {
+            label: 'task3',
+            status: TaskStatus.DONE,
+          } as TodoTask,
+        ],
+      } as Todo);
+    });
+
+    it('should update the todo with the title only.', async () => {
+      // Given.
+      const updateTodoDto = {
+        title: 'New title',
+        tasks: [],
+      } as UpdateTodoDto;
+
+      // When.
+      const result = await todoListService.updateTodo(todoId, updateTodoDto);
+
+      // Then.
+      expect(todoListRepositoryMock.findOne).toBeCalledWith(todoId);
+      expect(result).toMatchObject({
+        todoId: todoId,
+        createdAt: date,
+        title: 'New title',
+        tasks: [
+          {
+            label: 'task1',
+            status: TaskStatus.TODO,
+          } as TodoTask,
+          {
+            label: 'task2',
+            status: TaskStatus.TODO,
+          } as TodoTask,
+          {
+            label: 'task3',
+            status: TaskStatus.DONE,
+          } as TodoTask,
+        ],
+      } as Todo);
+    });
+
+    it('should update the tasks with the label only.', async () => {
+      // Given.
+      const updateTodoDto = {
+        tasks: [
+          {
+            taskIndex: 0,
+            label: 'new task 1',
+          } as UpdateTaskDto,
+        ],
+      } as UpdateTodoDto;
+
+      // When.
+      const result = await todoListService.updateTodo(todoId, updateTodoDto);
+
+      // Then.
+      expect(todoListRepositoryMock.findOne).toBeCalledWith(todoId);
+      expect(result).toMatchObject({
+        todoId: todoId,
+        createdAt: date,
+        title: 'Old Title',
+        tasks: [
+          {
+            label: 'new task 1',
+            status: TaskStatus.TODO,
+          } as TodoTask,
+          {
+            label: 'task2',
+            status: TaskStatus.TODO,
+          } as TodoTask,
+          {
+            label: 'task3',
+            status: TaskStatus.DONE,
+          } as TodoTask,
+        ],
+      } as Todo);
+    });
+  });
 
   it('should remove the TODO if the given todo id exist and return corresponding result.', async () => {
     // Given.
     const existingTodoId = '54584f';
     const nonExistingTodoId = '54ze7f';
-    todoListRepositoryMock.remove.mockResolvedValueOnce(true).mockResolvedValueOnce(false);
+    todoListRepositoryMock.remove
+      .mockResolvedValueOnce(true)
+      .mockResolvedValueOnce(false);
 
     // When.
     const existingResult = await todoListService.remove(existingTodoId);
     const nonExistingResult = await todoListService.remove(nonExistingTodoId);
 
     // Then.
-    expect(todoListRepositoryMock.remove.mock.calls[0][0]).toBe(existingTodoId);
-    expect(todoListRepositoryMock.remove.mock.calls[1][0]).toBe(nonExistingTodoId);
+    expect(todoListRepositoryMock.remove).nthCalledWith(1, existingTodoId);
+    expect(todoListRepositoryMock.remove).nthCalledWith(2, nonExistingTodoId);
 
     expect(existingResult).toBe(true);
     expect(nonExistingResult).toBe(false);
@@ -376,7 +381,9 @@ describe('TodoListService', () => {
 
   it('should remove all the TODO in the database and return the corresponding result.', async () => {
     // Given.
-    todoListRepositoryMock.removeAll.mockResolvedValueOnce(true).mockResolvedValueOnce(false);
+    todoListRepositoryMock.removeAll
+      .mockResolvedValueOnce(true)
+      .mockResolvedValueOnce(false);
 
     // When.
     const existingResult = await todoListService.removeAll();
@@ -391,7 +398,9 @@ describe('TodoListService', () => {
     // Given.
     const nonExistingTodoId = '454';
     todoListRepositoryMock.findOne.mockRejectedValue(
-      new NotFoundException(`Todo with todoId #${nonExistingTodoId} not found in the database!`),
+      new NotFoundException(
+        `Todo with todoId #${nonExistingTodoId} not found in the database!`,
+      ),
     );
 
     // When.
@@ -405,10 +414,15 @@ describe('TodoListService', () => {
     // When.
     const nonExistingTodoId = '444dss';
     todoListRepositoryMock.findOne.mockRejectedValue(
-      new NotFoundException(`Todo with todoId #${nonExistingTodoId} not found in the database!`),
+      new NotFoundException(
+        `Todo with todoId #${nonExistingTodoId} not found in the database!`,
+      ),
     );
     // Given.
-    const rejectedPromise = todoListService.updateTodo(nonExistingTodoId, undefined);
+    const rejectedPromise = todoListService.updateTodo(
+      nonExistingTodoId,
+      undefined,
+    );
 
     // Then.
     await expect(rejectedPromise).rejects.toThrow(NotFoundException);
@@ -456,7 +470,7 @@ describe('TodoListService', () => {
     const rejectedPromise = todoListService.updateTodo(todoId, updateTodoDto);
 
     // Then.
-    expect(todoListRepositoryMock.findOne.mock.calls[0][0]).toBe(todoId);
+    expect(todoListRepositoryMock.findOne).toBeCalledWith(todoId);
     await expect(rejectedPromise).rejects.toThrow(BadRequestException);
   });
 });

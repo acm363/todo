@@ -2,9 +2,9 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { TodoListController } from './todo-list.controller';
 import { createMock, DeepMocked } from '@golevelup/nestjs-testing';
 import { TodoListService } from './todo-list.service';
-import {TaskStatus, Todo} from './entities/todo.entity';
+import { TaskStatus, Todo } from './entities/todo.entity';
 import { NotFoundException } from '@nestjs/common';
-import {UpdateTaskDto, UpdateTodoDto, ViewableTodoDto} from './dto/todoDto';
+import { UpdateTaskDto, UpdateTodoDto, ViewableTodoDto } from './dto/todoDto';
 
 describe('TodolistController', () => {
   let controller: TodoListController;
@@ -136,7 +136,9 @@ describe('TodolistController', () => {
     // Given.
     const existingTodoId = '566';
     const nonExistingTodoId = '445';
-    todoListServiceMock.remove.mockResolvedValueOnce(true).mockResolvedValueOnce(false);
+    todoListServiceMock.remove
+      .mockResolvedValueOnce(true)
+      .mockResolvedValueOnce(false);
 
     // When.
     const existingResult = await controller.removeOneTodo(existingTodoId);
@@ -152,7 +154,9 @@ describe('TodolistController', () => {
 
   it('should remove all the TODO and return the corresponding result.', async () => {
     // Given.
-    todoListServiceMock.removeAll.mockResolvedValueOnce(true).mockResolvedValueOnce(false);
+    todoListServiceMock.removeAll
+      .mockResolvedValueOnce(true)
+      .mockResolvedValueOnce(false);
 
     // When.
     const existingResult = await controller.removeAll();
@@ -191,10 +195,16 @@ describe('TodolistController', () => {
     } as Todo);
 
     // When.
-    const updatedResult = await controller.updateTodo(existingTodoId, updateTodoDto);
+    const updatedResult = await controller.updateTodo(
+      existingTodoId,
+      updateTodoDto,
+    );
 
     // Then.
-    expect(todoListServiceMock.updateTodo).toBeCalledWith(existingTodoId, updateTodoDto);
+    expect(todoListServiceMock.updateTodo).toBeCalledWith(
+      existingTodoId,
+      updateTodoDto,
+    );
     expect(updatedResult).toStrictEqual({
       title: 'new title',
       tasks: [
@@ -211,7 +221,9 @@ describe('TodolistController', () => {
     // Given.
     const nonExistingTodoId = 'd4584qs';
     todoListServiceMock.findOne.mockRejectedValue(
-      new NotFoundException(`Todo with todoId #${nonExistingTodoId} not found in the database!`),
+      new NotFoundException(
+        `Todo with todoId #${nonExistingTodoId} not found in the database!`,
+      ),
     );
 
     // When.
@@ -225,7 +237,9 @@ describe('TodolistController', () => {
     // Given.
     const nonExistingTodoId = 'd4584qs';
     todoListServiceMock.updateTodo.mockRejectedValue(
-      new NotFoundException(`Todo with todoId #${nonExistingTodoId} not found in the database!`),
+      new NotFoundException(
+        `Todo with todoId #${nonExistingTodoId} not found in the database!`,
+      ),
     );
 
     // When.
