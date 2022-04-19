@@ -39,6 +39,7 @@ describe('ApiKeyGuard', () => {
 
   it('should return false when an invalid authentication is given.', () => {
     // Given.
+    const authorization = 'bearer_key';
     const headers = {
       Authorization: 'auth',
     };
@@ -52,7 +53,7 @@ describe('ApiKeyGuard', () => {
         }),
       }),
     });
-    configServiceMock.get.mockReturnValue('bearer_key');
+    configServiceMock.get.mockReturnValue(authorization);
 
     // When.
     const result = apiKeyGuard.canActivate(mockExecutionContext);
