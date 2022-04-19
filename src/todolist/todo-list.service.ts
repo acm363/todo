@@ -1,4 +1,8 @@
-import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
+import {
+  BadRequestException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import { TaskStatus, Todo, TodoTask } from './entities/todo.entity';
 import { TodoListRepository } from './todo-list-repository.service';
 import { CreateTodoDto, UpdateTodoDto } from './dto/todoDto';
@@ -17,7 +21,9 @@ export class TodoListService {
     if (todo) {
       return todo;
     }
-    throw new NotFoundException(`Todo with todoId #${todoId} not found in the database!`);
+    throw new NotFoundException(
+      `Todo with todoId #${todoId} not found in the database!`,
+    );
   }
 
   public async create(createTodoDto: CreateTodoDto): Promise<Todo> {
@@ -34,21 +40,30 @@ export class TodoListService {
     return this.todoRepository.create(todo);
   }
 
-  public async updateTodo(todoId: string, updateTodoDto: UpdateTodoDto): Promise<Todo> {
-    let existingTodo = await this.todoRepository.findOne(todoId);
+  public async updateTodo(
+    todoId: string,
+    updateTodoDto: UpdateTodoDto,
+  ): Promise<Todo> {
+    const existingTodo = await this.todoRepository.findOne(todoId);
     if (!existingTodo) {
-      throw new NotFoundException(`Todo with todoId #${todoId} not found in the database!`);
+      throw new NotFoundException(
+        `Todo with todoId #${todoId} not found in the database!`,
+      );
     }
 
     for (const updateTask of updateTodoDto.tasks) {
       if (updateTask.taskIndex >= existingTodo.tasks.length) {
-        throw new BadRequestException(`The given task index doesn't exist in the todo tasks list!`);
+        throw new BadRequestException(
+          `The given task index doesn't exist in the todo tasks list!`,
+        );
       }
 
       const todoTask = existingTodo.tasks[updateTask.taskIndex];
 
-      if (! (updateTask?.isInTodoState === undefined)) {
-        todoTask.status = updateTask.isInTodoState  ? TaskStatus.TODO : TaskStatus.DONE;
+      if (updateTask.isInTodoState !== undefined) {
+        todoTask.status = updateTask.isInTodoState
+          ? TaskStatus.TODO
+          : TaskStatus.DONE;
       }
 
       if (updateTask.label) {
