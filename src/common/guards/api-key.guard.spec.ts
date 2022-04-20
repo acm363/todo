@@ -1,42 +1,64 @@
 import { ApiKeyGuard } from './api-key.guard';
 import { ConfigService } from '@nestjs/config';
-import { Test, TestingModule } from '@nestjs/testing';
-
-const key_value = 'a special key';
-class ApiKeyGuardMock {
-  canActivate(authentication: string) {
-    return authentication === key_value;
-  }
-}
+import { createMock, DeepMocked } from '@golevelup/nestjs-testing';
+import { ExecutionContext } from '@nestjs/common';
 
 describe('ApiKeyGuard', () => {
-  let configService: ConfigService;
   let apiKeyGuard: ApiKeyGuard;
-  let apiKeyGuardMock: ApiKeyGuardMock;
+  let configServiceMock: DeepMocked<ConfigService>;
 
   beforeEach(async () => {
-    const module: TestingModule = await Test.createTestingModule({
-      imports: [ConfigService],
-    }).compile();
-    configService = module.get<ConfigService>(ConfigService);
-    apiKeyGuard = new ApiKeyGuard(configService);
-    apiKeyGuardMock = new ApiKeyGuardMock();
+    configServiceMock = createMock<ConfigService>();
+    apiKeyGuard = new ApiKeyGuard(configServiceMock);
   });
 
-  it('should be defined', () => {
-    expect(apiKeyGuard).toBeDefined();
+  it('should return true when a valid authentication is given.', () => {
+    // Given.
+    const headers = {
+      Authorization: 'bearer_key',
+    };
+    const authorization = 'bearer_key';
+    const mockExecutionContext = createMock<ExecutionContext>({
+      switchToHttp: () => ({
+        getRequest: () => ({
+          headers: headers,
+          header: (name): string => {
+            return headers[name];
+          },
+        }),
+      }),
+    });
+    configServiceMock.get.mockReturnValue(authorization);
+
+    // When.
+    const result = apiKeyGuard.canActivate(mockExecutionContext);
+
+    // Then.
+    expect(result).toBe(true);
   });
 
-  describe('Match Authentification Key', () => {
-    describe('when authentification key is correct', () => {
-      it('should return true', async () => {
-        expect(apiKeyGuardMock.canActivate(key_value)).toBeTruthy();
-      });
+  it('should return false when an invalid authentication is given.', () => {
+    // Given.
+    const authorization = 'bearer_key';
+    const headers = {
+      Authorization: 'auth',
+    };
+    const mockExecutionContext = createMock<ExecutionContext>({
+      switchToHttp: () => ({
+        getRequest: () => ({
+          headers: headers,
+          header: (name): string => {
+            return headers[name];
+          },
+        }),
+      }),
     });
-    describe('otherwise', () => {
-      it('should return false', async () => {
-        expect(apiKeyGuardMock.canActivate('')).toBeFalsy();
-      });
-    });
+    configServiceMock.get.mockReturnValue(authorization);
+
+    // When.
+    const result = apiKeyGuard.canActivate(mockExecutionContext);
+
+    // Then.
+    expect(result).toBe(false);
   });
 });
