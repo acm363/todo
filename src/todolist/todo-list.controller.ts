@@ -1,4 +1,4 @@
-import { Body, Controller, Delete, Get, Header, Logger, Param, Patch, Post } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Logger, Param, Patch, Post } from '@nestjs/common';
 import { TodoListService } from './todo-list.service';
 import { CreateTodoDto, TodoTaskDto, UpdateTodoDto, ViewableTodoDto } from './dto/todoDto';
 import { Todo } from './entities/todo.entity';
@@ -10,7 +10,6 @@ export class TodoListController {
   constructor(private readonly todoListService: TodoListService) {}
 
   @Get()
-  @Header('Returned-At', new Date().toLocaleString())
   public async findAll(): Promise<ViewableTodoDto[]> {
     this.logger.debug(`Get all todo resources`);
     const todos = await this.todoListService.findAll();
@@ -20,7 +19,6 @@ export class TodoListController {
   }
 
   @Get(':id')
-  @Header('Returned-At', new Date().toLocaleString())
   public async findOne(@Param('id') todoId: string): Promise<ViewableTodoDto> {
     this.logger.debug(`Get the todo of id ${todoId}!`);
     const todo = await this.todoListService.findOne(todoId);
@@ -28,7 +26,6 @@ export class TodoListController {
   }
 
   @Post()
-  @Header('Returned-At', new Date().toLocaleString())
   public async create(@Body() createTodoDto: CreateTodoDto): Promise<ViewableTodoDto> {
     this.logger.debug(`Create a todo -- ${JSON.stringify(createTodoDto)}`);
     const todo = await this.todoListService.create(createTodoDto);
@@ -36,7 +33,6 @@ export class TodoListController {
   }
 
   @Patch(':todoId')
-  @Header('Returned-At', new Date().toLocaleString())
   public async updateTodo(@Param('todoId') todoId: string, @Body() updateTodoDto: UpdateTodoDto): Promise<ViewableTodoDto> {
     this.logger.debug(`Update the todo of todoId #${todoId}`);
     const todo = await this.todoListService.updateTodo(todoId, updateTodoDto);
@@ -44,14 +40,12 @@ export class TodoListController {
   }
 
   @Delete(':todoId')
-  @Header('Returned-At', new Date().toLocaleString())
   public async removeOneTodo(@Param('todoId') todoId: string): Promise<boolean> {
     this.logger.debug(`Delete the todo of id #${todoId}`);
     return this.todoListService.remove(todoId);
   }
 
   @Delete()
-  @Header('Returned-At', new Date().toLocaleString())
   public async removeAll(): Promise<boolean> {
     this.logger.debug(`Delete all the todo in the database`);
     return await this.todoListService.removeAll();
