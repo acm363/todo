@@ -250,7 +250,7 @@ describe('TodoListService', () => {
       const updateTodoDto = {
         tasks: [
           {
-            taskIndex: 0,
+            taskIndex: 1,
             isInTodoState: false,
             label: 'new task 2',
           } as UpdateTaskDto,
