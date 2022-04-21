@@ -1,0 +1,26 @@
+stages:
+  - check
+
+build:
+  stage: check
+  image: node
+  script:
+    - npm install --silent
+    - npm run build
+  artifacts:
+    paths:
+      - dist/
+
+test:
+  stage: check
+  image: weboaks/node-karma-protractor-chrome
+  script:
+    - npm install --silent
+    - npm run test
+
+lint:
+  stage: check
+  image: node
+  script:
+    - npm install --silent
+    - npm run lint
