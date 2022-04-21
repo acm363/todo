@@ -4,7 +4,7 @@ import { ValidationPipe } from '@nestjs/common';
 import * as mongoose from 'mongoose';
 
 async function bootstrap() {
-  // debug to see the mongoose requests
+  // Debug to see the mongoose requests.
   mongoose.set('debug', true);
   const app = await NestFactory.create(AppModule);
   app.useGlobalPipes(
